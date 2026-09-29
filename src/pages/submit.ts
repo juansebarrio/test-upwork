@@ -15,7 +15,8 @@ export const POST: APIRoute = async ({ request, redirect }) => {
   const form = await request.formData();
 
   // Honeypot filled in: almost certainly a bot. Pretend it worked, store nothing.
-  const honeypot = form.get('website');
+  // The field name matches the one in index.astro and nothing an autofill heuristic knows.
+  const honeypot = form.get('x9f3a');
   if (typeof honeypot === 'string' && honeypot.trim() !== '') {
     return redirect('/thanks', 303);
   }

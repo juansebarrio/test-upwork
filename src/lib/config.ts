@@ -21,8 +21,10 @@ export const config = {
   quickExitUrl: env.QUICK_EXIT_URL ?? 'https://www.weather.com/',
   /** Longest story we accept, in characters. */
   maxLength: 8000,
-  /** How long a moderator stays signed in, in seconds. */
-  adminSessionSeconds: 8 * 60 * 60,
+  /** A moderator is logged out after this long without activity, in seconds. */
+  adminIdleSeconds: 30 * 60,
+  /** Every login attempt takes at least this long, whatever the result, in milliseconds. */
+  loginDelayMs: 500,
 };
 
 if (!config.adminPassword) {

@@ -25,7 +25,7 @@ src/
   pages/admin/           Moderation panel, login and actions.
   styles/global.css      Palette, typography, layout. Fonts are in public/fonts.
 public/
-  quick-exit.js          Leave-quickly button, Escape key, history-free navigation.
+  quick-exit.js          Leave-quickly button, double Escape, history-free navigation.
   fonts/                 Nunito, self-hosted woff2 (SIL Open Font License).
 deploy/                  Caddyfile, systemd unit, Dockerfile, step-by-step DEPLOY.md.
 docs/                    Moderation guide, community document, verification checklist.
@@ -63,12 +63,12 @@ Changing any of these is a restart, not a rebuild.
 - **Headers on every response**: `Content-Security-Policy: default-src 'self'` (and only `'self'` for scripts, styles, fonts, images, connections, form targets), `Referrer-Policy: no-referrer`, `Strict-Transport-Security`, `X-Content-Type-Options: nosniff`, `Cache-Control: no-store`, `frame-ancestors 'none'`.
 - **No inline scripts or styles**, so the CSP has no `'unsafe-inline'` anywhere. Astro is configured with `inlineStylesheets: 'never'`.
 - **No logging**: the app prints one line at startup and error messages without request data. The Node adapter has no request logger; Caddy's access log is set to `discard`; Caddy is told not to forward `X-Forwarded-For` at all.
-- **Cookies**: none on public pages. The admin cookie is `Path=/admin; HttpOnly; Secure; SameSite=Strict`, holds a random token, and the session table lives in memory only.
+- **Cookies**: none on public pages. The admin cookie is `Path=/admin; HttpOnly; Secure; SameSite=Strict` with no expiry (it dies with the browser), holds a random token, and the session table lives in memory only. Sessions end after 30 minutes without activity. Every login attempt takes a fixed 500 ms whatever the outcome, so timing says nothing, and nothing about attempts is counted or stored.
 - **CSRF**: form posts must carry an `Origin` matching the `Host` header, and `Sec-Fetch-Site` may not be `cross-site`.
-- **Spam**: a honeypot field. No rate limiting, because rate limiting needs to know who is asking.
+- **Spam**: a honeypot field with a meaningless name so browser autofill never fills it. No rate limiting, because rate limiting needs to know who is asking.
 - **Deletion**: `DELETE FROM`, with `secure_delete=ON` so freed pages are zeroed, `journal_mode=DELETE` so no write-ahead log lingers, and `auto_vacuum=FULL`.
 - **Random ids** (`WITHOUT ROWID` table) so nothing, not even the row order on disk, reveals when a story arrived within its day.
-- **Quick exit**: `location.replace` for the exit, for internal links and for the form (submitted in the background, then replaced), so a visit is one history entry and leaving overwrites it.
+- **Quick exit**: one tap on the button, or Escape twice within a second (one press alone does nothing, so a stray key never erases a story). `location.replace` for the exit, for internal links and for the form (submitted in the background, then replaced), so a visit is one history entry and leaving overwrites it.
 
 ## Documents
 

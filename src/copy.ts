@@ -18,9 +18,10 @@ export const copy = {
       'Nothing here asks who you are. We do not know, and we have built it so that we cannot find out.',
     ],
     textareaLabel: 'Your story',
+    /** One line shown just above the box. */
+    reminder: 'A gentle reminder: please leave out names, places or details that could point to you or to someone else.',
     placeholder: 'Take your time. Write as much or as little as you like.',
     submit: 'Pass it to us',
-    beforeSubmit: 'Before you send: please leave out names, workplaces, street names or anything that could point to you or to someone else.',
     afterSubmitNote: 'A person from the collective reads every story before anything is shared.',
     errors: {
       empty: 'The cup is empty. Write a few words first, then pass it to us.',
@@ -49,7 +50,7 @@ export const copy = {
 
   quickExit: {
     label: 'Leave quickly',
-    hint: 'Press Esc at any time to leave for a weather page. Your text is cleared first.',
+    hint: 'Press Esc twice, quickly, to leave for a weather page. Your text is cleared first.',
   },
 
   notFound: {
@@ -89,7 +90,8 @@ export const copy = {
     confirmDeleteYes: 'Yes, delete it',
     confirmDeleteNo: 'Keep it',
     receivedOn: 'Received',
-    logout: 'Sign out',
+    logout: 'Log out',
+    sessionNote: 'You are logged out automatically after 30 minutes without activity, and when you close the browser.',
     archiveOn: 'The public archive is switched on. Approved stories appear at /stories.',
     archiveOff: 'The public archive is switched off. Approving a story keeps it for later; nothing is shown publicly.',
   },

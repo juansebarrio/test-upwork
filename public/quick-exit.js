@@ -1,19 +1,25 @@
 /* Quick exit.
- *  - Clicking the "Leave quickly" control or pressing Escape clears every
- *    textarea, then replaces the current page with a weather site.
+ *  - Tapping a "Leave quickly" control clears every textarea, then replaces
+ *    the current page with a weather site. One tap is enough.
+ *  - Pressing Escape TWICE within one second does the same. A single Escape
+ *    does nothing, so a stray key press never throws away a half-written story.
  *  - Because we use location.replace, the current page disappears from the
  *    browser history: pressing Back on the weather site goes to wherever the
  *    visitor was before Tea Talks, not back here.
  *  - Internal links and the story form also navigate with location.replace,
  *    so a visit to several Tea Talks pages still occupies one history entry.
- *  Without JavaScript the control is a plain link; everything else still works.
+ *  Without JavaScript the controls are plain links; everything else still works.
+ *  Nothing here is stored, sent or counted; the only state is one timestamp
+ *  in memory that dies with the page.
  */
 (function () {
   'use strict';
 
-  var exitEl = document.querySelector('[data-quick-exit]');
-  if (!exitEl) return;
-  var target = exitEl.getAttribute('href');
+  var exits = document.querySelectorAll('[data-quick-exit]');
+  if (!exits.length) return;
+  var target = exits[0].getAttribute('href');
+  var DOUBLE_PRESS_MS = 1000;
+  var lastEscapeAt = 0;
 
   function clearText() {
     var areas = document.querySelectorAll('textarea');
@@ -28,15 +34,23 @@
     window.location.replace(target);
   }
 
-  exitEl.addEventListener('click', function (ev) {
-    ev.preventDefault();
-    leave();
-  });
-
-  document.addEventListener('keydown', function (ev) {
-    if (ev.key === 'Escape' || ev.key === 'Esc') {
+  for (var k = 0; k < exits.length; k++) {
+    exits[k].addEventListener('click', function (ev) {
       ev.preventDefault();
       leave();
+    });
+  }
+
+  document.addEventListener('keydown', function (ev) {
+    if (ev.key !== 'Escape' && ev.key !== 'Esc') return;
+    if (ev.repeat) return; // holding the key down is not two presses
+    var now = Date.now();
+    if (now - lastEscapeAt <= DOUBLE_PRESS_MS) {
+      lastEscapeAt = 0;
+      ev.preventDefault();
+      leave();
+    } else {
+      lastEscapeAt = now;
     }
   });
 

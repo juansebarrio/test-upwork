@@ -27,7 +27,7 @@ curl -sI https://tea.example.org/ | grep -i set-cookie      # prints nothing
 curl -sI https://tea.example.org/thanks | grep -i set-cookie
 ```
 
-The only cookie in the whole app appears after a moderator signs in at `/admin`. Check its flags there: `Path=/admin; HttpOnly; Secure; SameSite=Strict`. Sign out and it is removed.
+The only cookie in the whole app appears after a moderator signs in at `/admin`. Check its flags there: `Path=/admin; HttpOnly; Secure; SameSite=Strict`, and no `Max-Age` or `Expires`, so it dies with the browser. Log out and it is removed. Leave the panel untouched for 30 minutes and the next click asks for the password again.
 
 ## 3. Database rows hold only text, status and day
 
@@ -74,7 +74,8 @@ On a phone and on a laptop:
 1. Open some unrelated site first (say, a news site). Then open Tea Talks.
 2. Type a few words in the box. Press **Leave quickly**.
 3. You land on the weather site. Press **Back**. You must land on the news site, **not** on Tea Talks.
-4. Open Tea Talks again, type, and this time press **Escape**. Same result.
+4. Open Tea Talks again, type, and this time press **Escape twice within a second**. Same result.
+   Also press Escape **once** and wait two seconds: nothing should happen and your text must still be there. A single stray Escape must never erase a story.
 5. Open Tea Talks, send a story, and from the thank-you page press **Leave quickly**. Press **Back**: news site again, not Tea Talks and not the form.
 6. Return to Tea Talks by typing the address. The box must be empty (the text was cleared before leaving).
 
@@ -102,7 +103,15 @@ and **no** `server:` line (Caddy's banner is removed).
 
 ## 7. Honeypot
 
-With developer tools, find the hidden field named `website` inside the form, give it any value, and submit. You get the normal thank-you page, but `inspect-db.mjs` shows nothing was stored.
+With developer tools, find the hidden field named `x9f3a` inside the form, give it any value, and submit. You get the normal thank-you page, but `inspect-db.mjs` shows nothing was stored.
+
+**Autofill test, required before launch.** If a browser's autofill ever filled the hidden field on its own, that person's story would be silently dropped. The field name is meaningless on purpose so autofill has nothing to match, but check on real phones:
+
+1. On an **iPhone with Safari** that has a contact card and saved addresses, and on an **Android phone with Chrome** that has autofill turned on with a saved address and payment method, open the story page.
+2. Tap into the box. If the keyboard offers an autofill suggestion, accept it. Write a short story and send it.
+3. On the server, run `inspect-db.mjs`. The story must be there. If it is not, autofill touched the honeypot and the field needs a different name.
+
+Repeat once with a password manager installed (1Password, Bitwarden or the phone's own) since they also fill forms.
 
 ## 8. Archive flag
 

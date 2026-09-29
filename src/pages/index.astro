@@ -20,6 +20,7 @@ const error = e === 'empty' ? copy.home.errors.empty : e === 'long' ? copy.home.
     {error && <p class="notice" role="alert">{error}</p>}
     <form method="post" action="/submit" data-replace-submit autocomplete="off">
       <label for="story">{copy.home.textareaLabel}</label>
+      <p class="hint hint-above">{copy.home.reminder}</p>
       <textarea
         id="story"
         name="story"
@@ -29,12 +30,16 @@ const error = e === 'empty' ? copy.home.errors.empty : e === 'long' ? copy.home.
         autocomplete="off"
         spellcheck="false"
       ></textarea>
-      <p class="hint">{copy.home.beforeSubmit}</p>
 
-      <!-- Honeypot. Hidden from people; bots tend to fill it. -->
+      <!--
+        Honeypot. Hidden from people; simple bots fill every field.
+        The name is deliberately meaningless so browser autofill (which guesses
+        from names like "website", "email", "name") never touches it. If it
+        did, real stories would be dropped as spam.
+      -->
       <div class="hp" aria-hidden="true">
-        <label for="website">Website</label>
-        <input type="text" id="website" name="website" tabindex="-1" autocomplete="off" />
+        <label for="x9f3a">Leave this empty</label>
+        <input type="text" id="x9f3a" name="x9f3a" tabindex="-1" autocomplete="off" autocapitalize="off" spellcheck="false" data-lpignore="true" data-1p-ignore="true" data-bwignore="true" />
       </div>
 
       <button type="submit" class="btn btn-wide">{copy.home.submit}</button>
