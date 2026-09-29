@@ -1,0 +1,46 @@
+---
+import Base from '../layouts/Base.astro';
+import Cup from '../components/Cup.astro';
+import { copy } from '../copy';
+import { config } from '../lib/config';
+
+// A validation hint may come back from /submit as ?e=empty or ?e=long.
+// Nothing the visitor wrote is ever part of a URL or echoed here.
+const e = Astro.url.searchParams.get('e');
+const error = e === 'empty' ? copy.home.errors.empty : e === 'long' ? copy.home.errors.long : null;
+---
+<Base title={copy.home.title}>
+  <section class="hero">
+    <Cup class="cup" />
+    <h1>{copy.home.greeting}</h1>
+    {copy.home.intro.map((p) => <p class="lead">{p}</p>)}
+  </section>
+
+  <section class="card">
+    {error && <p class="notice" role="alert">{error}</p>}
+    <form method="post" action="/submit" data-replace-submit autocomplete="off">
+      <label for="story">{copy.home.textareaLabel}</label>
+      <textarea
+        id="story"
+        name="story"
+        required
+        maxlength={config.maxLength}
+        placeholder={copy.home.placeholder}
+        autocomplete="off"
+        spellcheck="false"
+      ></textarea>
+      <p class="hint">{copy.home.beforeSubmit}</p>
+
+      <!-- Honeypot. Hidden from people; bots tend to fill it. -->
+      <div class="hp" aria-hidden="true">
+        <label for="website">Website</label>
+        <input type="text" id="website" name="website" tabindex="-1" autocomplete="off" />
+      </div>
+
+      <button type="submit" class="btn btn-wide">{copy.home.submit}</button>
+      <p class="hint">{copy.home.afterSubmitNote}</p>
+    </form>
+  </section>
+
+  <p class="quick-exit-hint">{copy.quickExit.hint}</p>
+</Base>

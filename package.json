@@ -1,0 +1,22 @@
+{
+  "name": "tea-talks",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Anonymous story submission page for Shai Collective",
+  "type": "module",
+  "scripts": {
+    "dev": "ASTRO_TELEMETRY_DISABLED=1 astro dev",
+    "build": "ASTRO_TELEMETRY_DISABLED=1 astro build",
+    "start": "node dist/server/entry.mjs",
+    "inspect-db": "node scripts/inspect-db.mjs",
+    "verify": "node scripts/verify.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@astrojs/node": "^9.5.5",
+    "astro": "^5.18.2",
+    "better-sqlite3": "^12.11.1"
+  }
+}

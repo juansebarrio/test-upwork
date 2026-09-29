@@ -1,0 +1,106 @@
+---
+/**
+ * Moderation panel. Sign in with the password from ADMIN_PASSWORD.
+ * Pending stories can be approved or deleted. Delete asks once, then removes the row for good.
+ */
+import Base from '../../layouts/Base.astro';
+import { copy } from '../../copy';
+import { config } from '../../lib/config';
+import { isSignedIn } from '../../lib/auth';
+import { getSubmission, listApproved, listPending } from '../../lib/db';
+
+const signedIn = isSignedIn(Astro.cookies);
+const failed = Astro.url.searchParams.get('login') === 'failed';
+const confirmId = Astro.url.searchParams.get('confirm');
+
+const pending = signedIn ? listPending() : [];
+const approved = signedIn ? listApproved() : [];
+const toConfirm = signedIn && confirmId ? getSubmission(confirmId) : undefined;
+const a = copy.admin;
+---
+<Base title={a.title} plain>
+  {!signedIn ? (
+    <section class="card">
+      <h1>{a.loginHeading}</h1>
+      {!config.adminPassword && <p class="notice" role="alert">{a.loginNotConfigured}</p>}
+      {failed && <p class="notice" role="alert">{a.loginFailed}</p>}
+      <form method="post" action="/admin/login">
+        <label for="password">{a.passwordLabel}</label>
+        <input type="password" id="password" name="password" required autocomplete="current-password" />
+        <p></p>
+        <button type="submit" class="btn">{a.loginButton}</button>
+      </form>
+    </section>
+  ) : toConfirm ? (
+    <section class="card">
+      <h1>{a.confirmDeleteHeading}</h1>
+      <p class="lead">{a.confirmDeleteBody}</p>
+      <div class="story">
+        <p class="story-text">{toConfirm.text}</p>
+        <p class="story-meta">{a.receivedOn} {toConfirm.day}</p>
+      </div>
+      <div class="story-actions">
+        <form method="post" action="/admin/action">
+          <input type="hidden" name="action" value="delete" />
+          <input type="hidden" name="id" value={toConfirm.id} />
+          <button type="submit" class="btn">{a.confirmDeleteYes}</button>
+        </form>
+        <a class="btn btn-quiet" href="/admin">{a.confirmDeleteNo}</a>
+      </div>
+    </section>
+  ) : (
+    <>
+      <div class="admin-bar">
+        <h1>{a.title}</h1>
+        <form method="post" action="/admin/action">
+          <input type="hidden" name="action" value="logout" />
+          <button type="submit" class="btn btn-quiet btn-small">{a.logout}</button>
+        </form>
+      </div>
+      <p class="notice notice-quiet">{config.publicArchive ? a.archiveOn : a.archiveOff}</p>
+
+      <section class="section">
+        <h2>{a.pendingHeading} ({pending.length})</h2>
+        {pending.length === 0 ? (
+          <p class="hint">{a.pendingEmpty}</p>
+        ) : (
+          <ul class="story-list">
+            {pending.map((s) => (
+              <li class="story">
+                <p class="story-text">{s.text}</p>
+                <p class="story-meta">{a.receivedOn} {s.day}</p>
+                <div class="story-actions">
+                  <form method="post" action="/admin/action">
+                    <input type="hidden" name="action" value="approve" />
+                    <input type="hidden" name="id" value={s.id} />
+                    <button type="submit" class="btn btn-small">{a.approve}</button>
+                  </form>
+                  <a class="btn btn-quiet btn-small" href={`/admin?confirm=${s.id}`}>{a.delete}</a>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+
+      <section class="section">
+        <h2>{a.approvedHeading} ({approved.length})</h2>
+        {approved.length === 0 ? (
+          <p class="hint">{a.approvedEmpty}</p>
+        ) : (
+          <ul class="story-list">
+            {approved.map((s) => (
+              <li class="story">
+                <p class="story-text">{s.text}</p>
+                <p class="story-meta">{a.receivedOn} {s.day}</p>
+                <div class="story-actions">
+                  <a class="btn btn-quiet btn-small" href={`/admin?confirm=${s.id}`}>{a.delete}</a>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+    </>
+  )}
+</Base>

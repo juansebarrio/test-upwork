@@ -1,0 +1,4 @@
+/* Used only by the bare 500 page rendered from middleware. */
+html { background: #f8f1e6; color: #3a2a21; font-family: 'Nunito', system-ui, sans-serif; line-height: 1.6; }
+.wrap { max-width: 38rem; margin: 0 auto; padding: 3rem 1.25rem; }
+a { color: #96432b; }

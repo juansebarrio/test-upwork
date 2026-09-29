@@ -1,0 +1,36 @@
+---
+import Base from '../layouts/Base.astro';
+import Cup from '../components/Cup.astro';
+import { copy } from '../copy';
+import { config } from '../lib/config';
+import { listApprovedNewestFirst } from '../lib/db';
+
+// Behind a flag. When off, this URL behaves exactly like a page that does not exist.
+if (!config.publicArchive) {
+  return new Response(null, { status: 404 });
+}
+
+const stories = listApprovedNewestFirst();
+---
+<Base title={copy.stories.title}>
+  <section class="hero">
+    <Cup class="cup" />
+    <h1>{copy.stories.heading}</h1>
+    <p class="lead">{copy.stories.intro}</p>
+  </section>
+
+  {stories.length === 0 ? (
+    <p class="notice notice-quiet">{copy.stories.empty}</p>
+  ) : (
+    <ul class="story-list">
+      {stories.map((s) => (
+        <li class="story">
+          <p class="story-text">{s.text}</p>
+          <p class="story-meta">{s.day}</p>
+        </li>
+      ))}
+    </ul>
+  )}
+
+  <p class="section"><a class="btn btn-quiet" href="/" data-replace>{copy.stories.backHome}</a></p>
+</Base>

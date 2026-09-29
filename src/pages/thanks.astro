@@ -1,0 +1,19 @@
+---
+import Base from '../layouts/Base.astro';
+import Cup from '../components/Cup.astro';
+import { copy } from '../copy';
+import { config } from '../lib/config';
+// This page deliberately has no access to what was submitted.
+---
+<Base title={copy.thanks.title}>
+  <section class="hero">
+    <Cup class="cup" />
+    <h1>{copy.thanks.heading}</h1>
+    {copy.thanks.body.map((p) => <p class="lead">{p}</p>)}
+  </section>
+  <div class="story-actions">
+    <a class="btn btn-quiet" href="/" data-replace>{copy.thanks.again}</a>
+    <a class="btn" href={config.quickExitUrl} data-quick-exit-secondary rel="noreferrer noopener">{copy.thanks.leave}</a>
+  </div>
+  <p class="quick-exit-hint">{copy.quickExit.hint}</p>
+</Base>

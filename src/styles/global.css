@@ -1,0 +1,239 @@
+/* Tea Talks: warm, quiet, mobile-first. One typeface, self-hosted. */
+
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/nunito-latin-400-normal.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('/fonts/nunito-latin-600-normal.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/nunito-latin-ext-400-normal.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('/fonts/nunito-latin-ext-600-normal.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+:root {
+  /* Palette: terracotta, amber, cream, deep brown. All text pairs pass WCAG AA on cream. */
+  --cream: #f8f1e6;
+  --cream-card: #fffaf2;
+  --cream-line: #e8dccb;
+  --brown: #3a2a21;
+  --brown-soft: #6a5547;
+  --terracotta: #b5563b;       /* decorative: borders, icon strokes */
+  --terracotta-deep: #96432b;  /* text, links, buttons: 5.9:1 on cream */
+  --amber: #e0b15c;            /* decorative glow */
+  --amber-deep: #8a5a14;       /* small labels: 5.3:1 on cream */
+  --radius: 14px;
+  --shadow: 0 1px 2px rgba(58, 42, 33, 0.06), 0 8px 24px rgba(58, 42, 33, 0.06);
+  color-scheme: light;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  background: var(--cream);
+  color: var(--brown);
+  font-family: 'Nunito', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  font-size: 106.25%; /* 17px */
+  line-height: 1.6;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background:
+    radial-gradient(60rem 30rem at 50% -12rem, rgba(224, 177, 92, 0.18), transparent 70%),
+    var(--cream);
+}
+
+a { color: var(--terracotta-deep); text-underline-offset: 0.15em; }
+a:hover { color: var(--brown); }
+
+h1, h2, h3 { font-weight: 600; line-height: 1.2; margin: 0 0 0.5rem; letter-spacing: -0.01em; }
+h1 { font-size: clamp(1.7rem, 4.5vw + 0.8rem, 2.4rem); }
+h2 { font-size: 1.3rem; }
+p { margin: 0 0 1rem; }
+
+.wrap {
+  width: 100%;
+  max-width: 38rem;
+  margin: 0 auto;
+  padding: 1.25rem 1rem 3rem;
+}
+@media (min-width: 40rem) { .wrap { padding: 2.5rem 1.5rem 4rem; } }
+
+/* Top bar: a small mark on the left, the quick exit on the right. */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.65rem 1rem;
+  background: rgba(248, 241, 230, 0.92);
+  backdrop-filter: blur(6px);
+  border-bottom: 1px solid var(--cream-line);
+}
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--brown);
+  text-decoration: none;
+  font-weight: 600;
+}
+.brand svg { width: 1.5rem; height: 1.5rem; }
+
+/* Quick exit: findable in half a second, calm rather than alarming. */
+.quick-exit {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 44px;
+  padding: 0.45rem 0.95rem;
+  border: 1.5px solid var(--terracotta);
+  border-radius: 999px;
+  background: var(--cream-card);
+  color: var(--terracotta-deep);
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  box-shadow: var(--shadow);
+}
+.quick-exit:hover, .quick-exit:focus-visible { background: var(--terracotta-deep); color: var(--cream-card); }
+.quick-exit svg { width: 1.1rem; height: 1.1rem; }
+.quick-exit-hint {
+  font-size: 0.9rem;
+  color: var(--brown-soft);
+  margin: 0.5rem 0 0;
+}
+
+.hero { margin: 1.5rem 0 1.25rem; }
+.hero .cup { width: 4.25rem; height: 4.25rem; margin-bottom: 0.75rem; }
+.lead { font-size: 1.08rem; color: var(--brown-soft); }
+
+.card {
+  background: var(--cream-card);
+  border: 1px solid var(--cream-line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 1.25rem;
+}
+@media (min-width: 40rem) { .card { padding: 1.75rem; } }
+
+label { display: block; font-weight: 600; margin-bottom: 0.5rem; }
+
+textarea, input[type="password"] {
+  width: 100%;
+  font: inherit;
+  color: var(--brown);
+  background: #fff;
+  border: 1.5px solid var(--cream-line);
+  border-radius: 10px;
+  padding: 0.9rem 1rem;
+}
+textarea {
+  min-height: 15rem;
+  resize: vertical;
+  line-height: 1.6;
+}
+textarea:focus, input:focus { outline: 3px solid rgba(224, 177, 92, 0.55); outline-offset: 1px; border-color: var(--amber); }
+
+.hint { font-size: 0.92rem; color: var(--brown-soft); margin: 0.6rem 0 1rem; }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 0.7rem 1.4rem;
+  border: 0;
+  border-radius: 999px;
+  font: inherit;
+  font-weight: 600;
+  background: var(--terracotta-deep);
+  color: var(--cream-card);
+  cursor: pointer;
+  text-decoration: none;
+}
+.btn:hover { background: var(--brown); }
+.btn:focus-visible { outline: 3px solid var(--amber); outline-offset: 2px; }
+.btn-wide { width: 100%; }
+.btn-quiet {
+  background: transparent;
+  color: var(--terracotta-deep);
+  border: 1.5px solid var(--terracotta);
+}
+.btn-quiet:hover { background: var(--cream); color: var(--brown); }
+.btn-small { min-height: 40px; padding: 0.4rem 1rem; font-size: 0.95rem; }
+
+.notice {
+  border-left: 4px solid var(--amber);
+  background: rgba(224, 177, 92, 0.16);
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+.notice-quiet { border-left-color: var(--cream-line); background: var(--cream-card); color: var(--brown-soft); }
+
+/* Honeypot: visually removed, unreachable by keyboard, invisible to screen readers.
+   Humans never see it; simple bots fill every field. */
+.hp {
+  position: absolute !important;
+  left: -10000px !important;
+  top: auto !important;
+  width: 1px !important;
+  height: 1px !important;
+  overflow: hidden !important;
+}
+
+/* Story lists (archive and moderation) */
+.story-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 1rem; }
+.story {
+  background: var(--cream-card);
+  border: 1px solid var(--cream-line);
+  border-radius: var(--radius);
+  padding: 1.1rem 1.25rem;
+}
+.story-text { white-space: pre-wrap; overflow-wrap: anywhere; margin: 0 0 0.75rem; }
+.story-meta { font-size: 0.85rem; color: var(--amber-deep); letter-spacing: 0.02em; text-transform: uppercase; margin: 0; }
+.story-actions { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 0.75rem; }
+.story-actions form { margin: 0; }
+
+.admin-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75rem; margin-bottom: 1.5rem; }
+.admin-bar form { margin: 0; }
+.section { margin: 2rem 0; }
+
+.footer { margin-top: auto; padding: 1.5rem 1rem 2rem; text-align: center; font-size: 0.9rem; color: var(--brown-soft); }
+
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .btn, .quick-exit { transition: background-color 120ms ease, color 120ms ease; }
+}

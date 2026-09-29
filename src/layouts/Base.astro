@@ -1,0 +1,44 @@
+---
+/**
+ * Page shell for every public page. Quick exit lives here so it is on every page.
+ * No inline styles, no inline scripts (the Content-Security-Policy forbids them).
+ */
+import '../styles/global.css';
+import { copy } from '../copy';
+import { config } from '../lib/config';
+import Cup from '../components/Cup.astro';
+
+interface Props {
+  title: string;
+  /** Hide the quick exit (used on the moderation panel only). */
+  plain?: boolean;
+}
+const { title, plain = false } = Astro.props;
+---
+<!doctype html>
+<html lang={copy.lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="referrer" content="no-referrer" />
+    <meta name="robots" content="noindex, nofollow, noarchive" />
+    <title>{title}</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="/" data-replace><Cup /><span>{copy.siteName}</span></a>
+      {!plain && (
+        <a class="quick-exit" href={config.quickExitUrl} data-quick-exit rel="noreferrer noopener">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4"/><path d="M10 17l5-5-5-5"/><path d="M15 12H3"/></svg>
+          <span>{copy.quickExit.label}</span>
+        </a>
+      )}
+    </header>
+    <main class="wrap">
+      <slot />
+    </main>
+    <footer class="footer">{copy.footer.line}</footer>
+    {!plain && <script is:inline src="/quick-exit.js" defer></script>}
+  </body>
+</html>
