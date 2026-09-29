@@ -6,6 +6,12 @@ import { config } from '../lib/config';
 // A validation hint may come back from /submit as ?e=empty or ?e=long.
 // Nothing the visitor wrote is ever part of a URL or echoed here.
 const e = Astro.url.searchParams.get('e');
+
+// The hidden "x9f3a" field below is the honeypot. Hidden from people; simple bots
+// fill every field. Its name is deliberately meaningless so browser autofill
+// (which guesses from names like "website", "email", "name") never touches it:
+// if it did, real stories would be dropped as spam. The name is checked in submit.ts.
+// This explanation lives here, in the frontmatter, so it is not sent to browsers.
 ---
 <Base>
   <h1>{copy.home.greeting}</h1>
@@ -28,14 +34,8 @@ const e = Astro.url.searchParams.get('e');
     <p class="field-note" id="story-note" role="status" data-error-empty hidden={!(e === 'empty')}>{copy.home.errors.empty}</p>
     {e === 'long' && <p class="field-note" role="status">{copy.home.errors.long}</p>}
 
-    <!--
-      Honeypot. Hidden from people; simple bots fill every field.
-      The name is deliberately meaningless so browser autofill (which guesses
-      from names like "website", "email", "name") never touches it. If it
-      did, real stories would be dropped as spam.
-    -->
     <div class="hp" aria-hidden="true">
-      <label for="x9f3a">Leave this empty</label>
+      <label for="x9f3a">{copy.home.honeypotLabel}</label>
       <input type="text" id="x9f3a" name="x9f3a" tabindex="-1" autocomplete="off" autocapitalize="off" spellcheck="false" data-lpignore="true" data-1p-ignore="true" data-bwignore="true" />
     </div>
 

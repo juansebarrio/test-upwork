@@ -9,31 +9,10 @@
 import { defineMiddleware } from 'astro:middleware';
 import { copy } from './copy';
 
-const CSP = [
-  "default-src 'self'",
-  "script-src 'self'",
-  "style-src 'self'",
-  "img-src 'self'",
-  "font-src 'self'",
-  "connect-src 'self'",
-  "form-action 'self'",
-  "frame-ancestors 'none'",
-  "base-uri 'none'",
-  "object-src 'none'",
-].join('; ');
+import { PAGE_HEADERS } from '../security-headers.mjs';
+import { config } from './lib/config';
 
-const HEADERS: Record<string, string> = {
-  'Content-Security-Policy': CSP,
-  'Referrer-Policy': 'no-referrer',
-  'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
-  'X-Content-Type-Options': 'nosniff',
-  'X-Frame-Options': 'DENY',
-  'Permissions-Policy': 'camera=(), microphone=(), geolocation=(), interest-cohort=()',
-  'Cross-Origin-Opener-Policy': 'same-origin',
-  'Cross-Origin-Resource-Policy': 'same-origin',
-  // Pages hold personal text (the form, the moderation panel). Never cache them.
-  'Cache-Control': 'no-store',
-};
+const HEADERS: Record<string, string> = { ...PAGE_HEADERS };
 
 function withHeaders(res: Response): Response {
   let out = res;
@@ -51,8 +30,11 @@ function escapeHtml(s: string): string {
   return s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!);
 }
 
-function page(title: string, heading: string, body: string): string {
-  return `<!doctype html><html lang="${copy.lang}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>${escapeHtml(title)}</title><link rel="stylesheet" href="/error.css"></head><body><main class="wrap"><h1>${escapeHtml(heading)}</h1><p>${escapeHtml(body)}</p><p><a href="/">${escapeHtml(copy.notFound.backHome)}</a></p></main></body></html>`;
+function page(_title: string, heading: string, body: string): string {
+  // Bare page for the 500 and 403 cases, styled by /error.css. It still carries
+  // the quick exit (link + the same script), since it can appear on a public screen.
+  const exit = `<a class="quick-exit" href="${escapeHtml(config.quickExitUrl)}" data-quick-exit aria-label="${escapeHtml(copy.quickExit.ariaLabel)}" rel="noreferrer noopener">${escapeHtml(copy.quickExit.label)}</a>`;
+  return `<!doctype html><html lang="${copy.lang}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="referrer" content="no-referrer"><title>${escapeHtml(copy.siteName)}</title><link rel="stylesheet" href="/error.css"></head><body>${exit}<main class="wrap"><h1>${escapeHtml(heading)}</h1><p>${escapeHtml(body)}</p><p><a href="/">${escapeHtml(copy.notFound.backHome)}</a></p></main><script src="/quick-exit.js" defer></script></body></html>`;
 }
 
 const errorPage = page(copy.error.title, copy.error.heading, copy.error.body);

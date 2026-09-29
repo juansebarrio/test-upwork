@@ -14,7 +14,7 @@ WorkingDirectory=/opt/tea-talks
 EnvironmentFile=/etc/tea-talks/env
 Environment=NODE_ENV=production
 Environment=ASTRO_TELEMETRY_DISABLED=1
-ExecStart=/usr/bin/node /opt/tea-talks/dist/server/entry.mjs
+ExecStart=/usr/bin/node /opt/tea-talks/server.mjs
 Restart=on-failure
 RestartSec=3
 

@@ -25,6 +25,18 @@ const REQUIRED_HEADERS = {
   'cache-control': (v) => v.includes('no-store'),
 };
 
+async function checkAsset(path) {
+  console.log(`\n${path} (static file)`);
+  const res = await fetch(base + path, { redirect: 'manual' });
+  check(res.status === 200, `status ${res.status}`);
+  for (const [name, test] of Object.entries(REQUIRED_HEADERS)) {
+    if (name === 'cache-control') continue; // static files may be cached; pages may not
+    const v = res.headers.get(name);
+    check(v !== null && test(v), `${name}: ${v ?? 'MISSING'}`);
+  }
+  check(res.headers.get('set-cookie') === null, 'no Set-Cookie header');
+}
+
 async function checkPage(path, { expectStatus = 200, allowCookie = false } = {}) {
   console.log(`\n${path}`);
   const res = await fetch(base + path, { redirect: 'manual' });
@@ -49,6 +61,7 @@ async function checkPage(path, { expectStatus = 200, allowCookie = false } = {})
 
   const sheets = [...html.matchAll(/<link[^>]+rel="stylesheet"[^>]+href="([^"]+)"/g)].map((m) => m[1]);
   for (const href of sheets) {
+    if (!assetsSeen.has(href)) { assetsSeen.add(href); await checkAsset(href); }
     const css = await (await fetch(base + href)).text();
     const cssExternal = [...css.matchAll(/url\(\s*['"]?(https?:)?\/\/[^)]+\)/g)].map((m) => m[0]);
     check(cssExternal.length === 0, cssExternal.length ? `${href} references other origins: ${cssExternal.join(', ')}` : `${href} loads only local assets`);
@@ -56,8 +69,10 @@ async function checkPage(path, { expectStatus = 200, allowCookie = false } = {})
   }
 }
 
+const assetsSeen = new Set();
 console.log(`Checking ${base}`);
 await checkPage('/');
+for (const asset of ['/quick-exit.js', '/favicon.svg', '/error.css', '/fonts/albert-sans-latin-wght-normal.woff2']) await checkAsset(asset);
 await checkPage('/thanks');
 await checkPage('/admin');
 await checkPage('/does-not-exist', { expectStatus: 404 });

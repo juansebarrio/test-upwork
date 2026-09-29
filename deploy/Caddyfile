@@ -27,6 +27,14 @@ tea.example.org {
 	header {
 		# Do not announce the server software.
 		-Server
+		# The app already sends these on every response. Setting them here too
+		# means even a misconfigured app, or a response Caddy generates itself,
+		# goes out with them. Identical values replace, so nothing is duplicated.
+		Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'self'; form-action 'self'; frame-ancestors 'none'; base-uri 'none'; object-src 'none'"
+		Referrer-Policy no-referrer
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options nosniff
+		defer
 	}
 
 	reverse_proxy 127.0.0.1:4321 {

@@ -134,7 +134,7 @@ systemctl enable --now tea-talks
 systemctl status tea-talks --no-pager
 ```
 
-You should see `Server listening on http://127.0.0.1:4321`. That address is only reachable from the server itself.
+You should see `[tea-talks] listening on http://127.0.0.1:4321`. That address is only reachable from the server itself.
 
 ## 9. Put Caddy in front
 

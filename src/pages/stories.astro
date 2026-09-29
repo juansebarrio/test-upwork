@@ -18,8 +18,8 @@ const page = Number.isFinite(requested) ? Math.min(Math.max(requested, 1), pages
 const stories = listApprovedPage(PAGE_SIZE, (page - 1) * PAGE_SIZE);
 ---
 <Base>
-  <h1>{copy.stories.heading}</h1>
-  <p class="lead">{copy.stories.intro}</p>
+  <h1 class="h1-stories">{copy.stories.heading}</h1>
+  <p class="lead lead-stories">{copy.stories.intro}</p>
 
   {stories.length === 0 ? (
     <p class="empty-line">{copy.stories.empty}</p>
@@ -34,7 +34,7 @@ const stories = listApprovedPage(PAGE_SIZE, (page - 1) * PAGE_SIZE);
     </ul>
   )}
 
-  <nav class="pager" aria-label="Pages">
+  <nav class="pager" aria-label={copy.stories.pagerLabel}>
     {page > 1 && <a class="ghost" href={page === 2 ? '/stories' : `/stories?page=${page - 1}`} data-replace>{copy.stories.newer}</a>}
     {page < pages && <a class="ghost" href={`/stories?page=${page + 1}`} data-replace>{copy.stories.older}</a>}
   </nav>

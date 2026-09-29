@@ -4,6 +4,10 @@
  *
  * Text may contain plain characters only (no HTML). Multi-paragraph fields
  * are arrays, one paragraph per item.
+ *
+ * A few keys are not rendered by the current layout (for example
+ * home.afterSubmitNote, thanks.leave, stories.backHome, admin.confirmDeleteBody,
+ * footer.line). They are kept so earlier wording is not lost.
  */
 export const copy = {
   siteName: 'Tea Talks',
@@ -27,6 +31,8 @@ export const copy = {
       'To keep yourself safe, try to leave out names, places or details that could identify you.',
     ],
     textareaLabel: 'Your story',
+    /** Label of the hidden anti-spam field. Nobody sees it; it must not look like a real field to autofill. */
+    honeypotLabel: 'Leave this empty',
     placeholder: 'Take your time. Write as much or as little as you like.',
     submit: 'Share this',
     afterSubmitNote: 'A person from the collective reads every story before anything is shared.',
@@ -55,6 +61,8 @@ export const copy = {
     backHome: 'Share your own',
     older: 'Older stories',
     newer: 'Newer stories',
+    /** Screen-reader name of the older/newer navigation. */
+    pagerLabel: 'Pages',
   },
 
   quickExit: {
@@ -85,6 +93,8 @@ export const copy = {
   admin: {
     title: 'Moderation',
     chip: 'Team',
+    /** Screen-reader name of the tab row. */
+    navLabel: 'Moderation',
     loginHeading: 'Moderator sign-in',
     loginIntro: 'Sign in to read what is waiting.',
     loginHint: 'The password is shared in person, never by message.',

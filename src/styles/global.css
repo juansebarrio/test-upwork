@@ -135,6 +135,8 @@ h1 {
   text-wrap: pretty;
 }
 h2 { font-size: 24px; line-height: 1.25; font-weight: 500; margin: 0; }
+.h1-stories { font-size: 28px; }
+.lead-stories { font-size: 15px; }
 p { margin: 0; }
 .lead {
   margin-top: 14px;
@@ -274,6 +276,8 @@ textarea:focus { border-color: var(--amber-focus-border); box-shadow: 0 0 0 3px 
   padding-bottom: 120px;
 }
 .login h1 { margin-top: 0; }
+.login .lead { font-size: 16px; }
+.login .field-note { margin-top: 16px; }
 label { display: block; font-size: 14px; font-weight: 500; margin: 32px 0 8px; }
 input[type='password'] {
   width: 100%;
@@ -321,7 +325,6 @@ input[type='password']:focus { border-color: var(--amber-focus-border); box-shad
   border-radius: 999px;
   padding: 1px 7px;
 }
-.count-quiet { color: var(--meta); background: transparent; border: 1px solid var(--chip-border); }
 .tabs-end { margin-left: auto; }
 .tabs form { margin: 0; }
 
@@ -337,8 +340,11 @@ input[type='password']:focus { border-color: var(--amber-focus-border); box-shad
 .card-text { font-size: 15px; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; }
 .card-row { display: grid; gap: 14px; }
 .card-meta { font-size: 13px; color: var(--meta); }
-.card-actions { display: flex; align-items: center; gap: 6px; }
+/* Mobile shows Approve first; the DOM keeps Delete first for the desktop row. */
+.card-actions { display: flex; flex-direction: row-reverse; justify-content: flex-end; align-items: center; gap: 6px; }
 .card-actions form { margin: 0; }
+.btn-approve, .btn-outline, .ghost-btn { position: relative; }
+.btn-approve::after, .btn-outline::after, .ghost-btn::after { content: ''; position: absolute; inset: -1px 0; } /* 44px hit area */
 .btn-approve {
   display: inline-flex;
   align-items: center;
@@ -421,10 +427,13 @@ input[type='password']:focus { border-color: var(--amber-focus-border); box-shad
   .btn-primary { width: auto; align-self: flex-start; }
   .footnote { text-align: left; }
   .centered { padding-bottom: 80px; }
-  .centered-narrow { max-width: 520px; }
+  .centered-narrow { max-width: 520px; width: 100%; margin: 0 auto; }
+  .h1-stories { font-size: 36px; }
+  .lead-stories { font-size: 16px; }
+  .page-wide { padding-top: 16px; }
   .story-item { padding: 32px 0; }
   .story-text { font-size: 17px; }
-  .login { max-width: 380px; padding-bottom: 100px; }
+  .login { max-width: 380px; width: 100%; margin: 0 auto; padding-bottom: 100px; }
   .login h1 { font-size: 34px; line-height: 1.2; }
   .login .btn-primary { width: 100%; }
   .tabs { gap: 26px; }
@@ -432,6 +441,7 @@ input[type='password']:focus { border-color: var(--amber-focus-border); box-shad
   .card { padding: 22px 24px 16px; }
   .card-text { font-size: 16px; line-height: 1.65; }
   .card-row { display: flex; align-items: center; justify-content: space-between; }
+  .card-actions { flex-direction: row; }
   .confirm-text { flex: 1 1 auto; }
   .empty { padding-bottom: 160px; }
   .empty .lead { font-size: 16px; }

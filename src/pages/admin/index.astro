@@ -44,14 +44,13 @@ const tabHref = tab === 'approved' ? '/admin?tab=approved' : '/admin';
     </section>
   ) : (
     <>
-      <nav class="tabs" aria-label="Moderation">
+      <nav class="tabs" aria-label={a.navLabel}>
         <a class:list={['tab', { 'tab-active': tab === 'waiting' }]} href="/admin" aria-current={tab === 'waiting' ? 'page' : undefined}>
           {a.tabWaiting}
           {pending.length > 0 && <span class="count">{pending.length}</span>}
         </a>
         <a class:list={['tab', { 'tab-active': tab === 'approved' }]} href="/admin?tab=approved" aria-current={tab === 'approved' ? 'page' : undefined}>
           {a.tabApproved}
-          {approved.length > 0 && <span class="count count-quiet">{approved.length}</span>}
         </a>
         <form method="post" action="/admin/action" class="tabs-end">
           <input type="hidden" name="action" value="logout" />

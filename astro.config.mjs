@@ -4,9 +4,9 @@ import node from '@astrojs/node';
 
 export default defineConfig({
   output: 'server',
-  adapter: node({ mode: 'standalone' }),
-  // Only reachable from the same machine; Caddy sits in front.
-  server: { host: '127.0.0.1', port: 4321 },
+  // Middleware mode: server.mjs owns the HTTP server, so static files get the
+  // same security headers as pages (the adapter's standalone server sends none).
+  adapter: node({ mode: 'middleware' }),
   // Cross-site form POSTs (CSRF) are rejected in src/middleware.ts by comparing the
   // Origin header with the Host header. Astro's own checkOrigin would need the site's
   // hostname baked in at build time (security.allowedDomains), which is easy to get

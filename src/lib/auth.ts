@@ -58,7 +58,7 @@ export function startSession(cookies: AstroCookies): void {
 export function endSession(cookies: AstroCookies): void {
   const token = cookies.get(SESSION_COOKIE)?.value;
   if (token) sessions.delete(token);
-  cookies.delete(SESSION_COOKIE, { path: COOKIE_PATH });
+  cookies.delete(SESSION_COOKIE, { path: COOKIE_PATH, httpOnly: true, secure: true, sameSite: 'strict' });
 }
 
 /** True when the cookie names a live session. Extends the session's deadline. */

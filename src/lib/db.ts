@@ -51,8 +51,8 @@ const stmts = {
   approvedPage: db.prepare<[number, number]>("SELECT id, text, status, day FROM submissions WHERE status = 'approved' ORDER BY day DESC, id LIMIT ? OFFSET ?"),
   remove: db.prepare<[string]>('DELETE FROM submissions WHERE id = ?'),
   byId: db.prepare<[string]>('SELECT id, text, status, day FROM submissions WHERE id = ?'),
-  // Within a day the order is by random id, i.e. no order at all. That is intentional.
-  pending: db.prepare("SELECT id, text, status, day FROM submissions WHERE status = 'pending' ORDER BY day ASC, id"),
+  // Newest day first. Within a day the order is by random id, i.e. no order at all. That is intentional.
+  pending: db.prepare("SELECT id, text, status, day FROM submissions WHERE status = 'pending' ORDER BY day DESC, id"),
   approvedAll: db.prepare("SELECT id, text, status, day FROM submissions WHERE status = 'approved' ORDER BY day DESC, id"),
   approvedNewest: db.prepare("SELECT id, text, status, day FROM submissions WHERE status = 'approved' ORDER BY day DESC, id"),
 };

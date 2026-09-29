@@ -13,8 +13,9 @@ WORKDIR /app
 COPY --from=build /app/dist ./dist
 COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/package.json ./package.json
+COPY --from=build /app/server.mjs /app/security-headers.mjs ./
 RUN mkdir -p /data && chown node:node /data
 USER node
 VOLUME /data
 EXPOSE 4321
-CMD ["node", "dist/server/entry.mjs"]
+CMD ["node", "server.mjs"]

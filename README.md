@@ -26,6 +26,8 @@ src/
   pages/thanks.astro     Confirmation.          pages/stories.astro Archive (flag).
   pages/admin/           Moderation panel, login and actions.
   styles/global.css      Design tokens from the handoff, typography, layout. Fonts are in public/fonts.
+server.mjs               Production entry: serves static files with the security headers, hands the rest to Astro.
+security-headers.mjs     The one list of headers, used by server.mjs and src/middleware.ts.
 public/
   quick-exit.js          Leave-quickly button, double Escape, history-free navigation.
   fonts/                 Albert Sans variable, self-hosted woff2 (SIL Open Font License).
@@ -62,13 +64,14 @@ Changing any of these is a restart, not a rebuild.
 
 ## Design
 
-The look follows the collective's handoff: Albert Sans as the one typeface, cream ground, terracotta for the single action, amber only for the quick exit and focus rings, no images or illustrations, no shadows, transitions limited to colour. The submission textarea fills the phone viewport so the button is reachable without scrolling. The public archive shows month and year only; the moderation panel shows "today", "yesterday" or the date, never a time, because no time is stored.
+The look follows the collective's handoff: Albert Sans as the one typeface, cream ground, terracotta for the single action, amber only for the quick exit and focus rings, no images or illustrations, no shadows, transitions limited to colour. The submission textarea fills the phone viewport so the button is reachable without scrolling. The public archive shows month and year only; the moderation panel shows "today", "yesterday" or the date, never a time, because no time is stored. Lists are newest day first. One handoff detail is left out on purpose: cards do not fade out after Approve or Delete, because the panel works without JavaScript and each action is a plain form post followed by a reload.
 
 ## Privacy design, in short
 
 - **Headers on every response**: `Content-Security-Policy: default-src 'self'` (and only `'self'` for scripts, styles, fonts, images, connections, form targets), `Referrer-Policy: no-referrer`, `Strict-Transport-Security`, `X-Content-Type-Options: nosniff`, `Cache-Control: no-store`, `frame-ancestors 'none'`.
 - **No inline scripts or styles**, so the CSP has no `'unsafe-inline'` anywhere. Astro is configured with `inlineStylesheets: 'never'`.
-- **No logging**: the app prints one line at startup and error messages without request data. The Node adapter has no request logger; Caddy's access log is set to `discard`; Caddy is told not to forward `X-Forwarded-For` at all.
+- **No logging**: the app prints one line at startup and error messages without request data. Caddy's access log is set to `discard`; Caddy is told not to forward `X-Forwarded-For` at all. One known edge: if the Astro adapter itself fails to build a request object (malformed headers), it logs "Could not render" with the URL path; the path never contains story text.
+- **Headers on static files too**: `server.mjs` serves the stylesheet, script, fonts and favicon itself with the same headers, because the adapter's built-in static server sends none. The Caddyfile sets them a second time at the edge.
 - **Cookies**: none on public pages. The admin cookie is `Path=/admin; HttpOnly; Secure; SameSite=Strict` with no expiry (it dies with the browser), holds a random token, and the session table lives in memory only. Sessions end after 30 minutes without activity. Every login attempt takes a fixed 500 ms whatever the outcome, so timing says nothing, and nothing about attempts is counted or stored.
 - **CSRF**: form posts are refused when `Sec-Fetch-Site` says anything but same-origin; browsers without that header are checked by `Origin` against `Host`. Under `no-referrer`, browsers send `Origin: null` on form navigations, so `Sec-Fetch-Site` has to be the primary signal. Admin forms are additionally protected by the `SameSite=Strict` cookie.
 - **Spam**: a honeypot field with a meaningless name so browser autofill never fills it. No rate limiting, because rate limiting needs to know who is asking.

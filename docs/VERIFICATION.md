@@ -54,7 +54,7 @@ There should be no other tables and no other files in `/var/lib/tea-talks/` apar
 Send two or three test stories and load a few pages first, so there would be something to log. Then:
 
 ```bash
-# The app: only "Server listening" and, if anything ever went wrong, an error message.
+# The app: only "[tea-talks] listening" and, if anything ever went wrong, an error message.
 journalctl -u tea-talks --no-pager --since "1 hour ago"
 
 # Caddy: certificate and startup lines only. No line should mention a path, a method, a status code or an address.
@@ -101,6 +101,14 @@ cache-control: no-store
 
 and **no** `server:` line (Caddy's banner is removed).
 
+Static files carry the same headers. Check one:
+
+```bash
+curl -sI https://tea.example.org/quick-exit.js | grep -iE "content-security-policy|referrer-policy|strict-transport|x-content-type"
+```
+
+`node scripts/verify.mjs https://tea.example.org` checks the pages and the static files together.
+
 ## 7. Honeypot
 
 With developer tools, find the hidden field named `x9f3a` inside the form, give it any value, and submit. You get the normal thank-you page, but `inspect-db.mjs` shows nothing was stored.
@@ -115,4 +123,4 @@ Repeat once with a password manager installed (1Password, Bitwarden or the phone
 
 ## 8. Archive flag
 
-With `PUBLIC_ARCHIVE=false`, `https://tea.example.org/stories` shows the same "nothing on this page" screen as any wrong address, with a 404 status. Set it to `true` in `/etc/tea-talks/env`, `systemctl restart tea-talks`, and the page shows approved stories, newest first, text and the month and year only (never the day).
+With `PUBLIC_ARCHIVE=false`, `https://tea.example.org/stories` shows the same "That page is not here." screen as any wrong address, with a 404 status. Set it to `true` in `/etc/tea-talks/env`, `systemctl restart tea-talks`, and the page shows approved stories, newest first, text and the month and year only (never the day).

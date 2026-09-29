@@ -7,7 +7,7 @@ A short guide for whoever reads the stories. No technical knowledge needed.
 1. Open `https://tea.example.org/admin` in your browser (the real address will be in your welcome note).
 2. Type the moderator password and press **Sign in**.
 3. Signing in takes about half a second on purpose; that is normal.
-4. You are logged out automatically after 30 minutes without activity, and when you close the browser. Press **Log out** (top right, and again at the bottom of the list) when you finish, especially on a shared computer.
+4. You are logged out automatically after 30 minutes without activity, and when you close the browser. Press **Log out** (at the right end of the Waiting / Approved row) when you finish, especially on a shared computer.
 
 If the password does not work, nothing bad has happened: just try again. Nobody is counting attempts, and nothing is recorded.
 
