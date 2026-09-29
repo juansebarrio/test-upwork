@@ -114,14 +114,14 @@ Set these lines:
 
 ```
 ADMIN_PASSWORD=paste-the-generated-password-here
-PUBLIC_ARCHIVE=false
+PUBLIC_ARCHIVE=true
 DB_PATH=/var/lib/tea-talks/tea-talks.sqlite
 QUICK_EXIT_URL=https://www.weather.com/
 HOST=127.0.0.1
 PORT=4321
 ```
 
-To turn the public archive on later: change `PUBLIC_ARCHIVE=false` to `PUBLIC_ARCHIVE=true` in this file and run `systemctl restart tea-talks`. No rebuild is needed. Same for changing the password or the quick-exit site.
+To switch the public archive off or on: change `PUBLIC_ARCHIVE` in this file and run `systemctl restart tea-talks`. No rebuild is needed. Same for changing the password or the quick-exit site.
 
 Share the password with moderators in person or through an end-to-end encrypted messenger, never by email.
 

@@ -1,4 +1,5 @@
-/* Used only by the bare 500 page rendered from middleware. */
-html { background: #f8f1e6; color: #3a2a21; font-family: 'Nunito', system-ui, sans-serif; line-height: 1.6; }
-.wrap { max-width: 38rem; margin: 0 auto; padding: 3rem 1.25rem; }
-a { color: #96432b; }
+/* Used only by the bare 500 and 403 pages rendered from middleware. */
+html { background: #f4ecdf; color: #3a2a20; font-family: 'Albert Sans', system-ui, sans-serif; line-height: 1.6; }
+.wrap { max-width: 640px; margin: 0 auto; padding: 48px 24px; }
+h1 { font-size: 30px; line-height: 1.2; font-weight: 500; letter-spacing: -0.01em; }
+a { color: #a9502b; text-underline-offset: 4px; }

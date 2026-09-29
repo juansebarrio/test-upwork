@@ -1,36 +1,41 @@
 ---
 import Base from '../layouts/Base.astro';
-import Cup from '../components/Cup.astro';
 import { copy } from '../copy';
 import { config } from '../lib/config';
-import { listApprovedNewestFirst } from '../lib/db';
+import { countApproved, listApprovedPage } from '../lib/db';
+import { monthYear } from '../lib/format';
 
 // Behind a flag. When off, this URL behaves exactly like a page that does not exist.
 if (!config.publicArchive) {
   return new Response(null, { status: 404 });
 }
 
-const stories = listApprovedNewestFirst();
+const PAGE_SIZE = 20;
+const total = countApproved();
+const pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+const requested = Number.parseInt(Astro.url.searchParams.get('page') ?? '1', 10);
+const page = Number.isFinite(requested) ? Math.min(Math.max(requested, 1), pages) : 1;
+const stories = listApprovedPage(PAGE_SIZE, (page - 1) * PAGE_SIZE);
 ---
-<Base title={copy.stories.title}>
-  <section class="hero">
-    <Cup class="cup" />
-    <h1>{copy.stories.heading}</h1>
-    <p class="lead">{copy.stories.intro}</p>
-  </section>
+<Base>
+  <h1>{copy.stories.heading}</h1>
+  <p class="lead">{copy.stories.intro}</p>
 
   {stories.length === 0 ? (
-    <p class="notice notice-quiet">{copy.stories.empty}</p>
+    <p class="empty-line">{copy.stories.empty}</p>
   ) : (
     <ul class="story-list">
       {stories.map((s) => (
-        <li class="story">
+        <li class="story-item">
           <p class="story-text">{s.text}</p>
-          <p class="story-meta">{s.day}</p>
+          <div class="story-when">{monthYear(s.day)}</div>
         </li>
       ))}
     </ul>
   )}
 
-  <p class="section"><a class="btn btn-quiet" href="/" data-replace>{copy.stories.backHome}</a></p>
+  <nav class="pager" aria-label="Pages">
+    {page > 1 && <a class="ghost" href={page === 2 ? '/stories' : `/stories?page=${page - 1}`} data-replace>{copy.stories.newer}</a>}
+    {page < pages && <a class="ghost" href={`/stories?page=${page + 1}`} data-replace>{copy.stories.older}</a>}
+  </nav>
 </Base>

@@ -6,7 +6,7 @@ Run these yourself after deploying. Each item names what to do and what you shou
 
 1. Open the site in Firefox or Chrome. Open the developer tools (F12) and choose the **Network** tab.
 2. Tick "Disable cache", then reload the page.
-3. Look at the domain column of every row. **Every request must go to your own hostname.** Expect roughly: the page, one stylesheet, `quick-exit.js`, `favicon.svg`, and two to four `.woff2` font files.
+3. Look at the domain column of every row. **Every request must go to your own hostname.** Expect roughly: the page, one stylesheet, `quick-exit.js`, `favicon.svg`, and one or two `.woff2` font files.
 4. Type something in the box and send it. The only new request is a POST to `/submit` and the `/thanks` page, both on your hostname.
 5. Repeat on `/stories` (if on) and `/admin`.
 
@@ -115,4 +115,4 @@ Repeat once with a password manager installed (1Password, Bitwarden or the phone
 
 ## 8. Archive flag
 
-With `PUBLIC_ARCHIVE=false`, `https://tea.example.org/stories` shows the same "nothing on this page" screen as any wrong address, with a 404 status. Set it to `true` in `/etc/tea-talks/env`, `systemctl restart tea-talks`, and the page shows approved stories, newest first, text and date only.
+With `PUBLIC_ARCHIVE=false`, `https://tea.example.org/stories` shows the same "nothing on this page" screen as any wrong address, with a 404 status. Set it to `true` in `/etc/tea-talks/env`, `systemctl restart tea-talks`, and the page shows approved stories, newest first, text and the month and year only (never the day).

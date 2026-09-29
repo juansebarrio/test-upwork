@@ -19,14 +19,16 @@ src/
   lib/config.ts          Environment variables (ADMIN_PASSWORD, PUBLIC_ARCHIVE, ...).
   lib/db.ts              SQLite: one table, three fields, hard delete.
   lib/auth.ts            Constant-time password check, in-memory admin sessions.
-  layouts/Base.astro     Page shell with the quick-exit control.
+  layouts/Base.astro     Page shell: wordmark header, quick exit, main column.
+  components/QuickExit.astro  The one shared quick-exit control (Lucide log-out icon).
+  lib/format.ts          Month-and-year and "received today" labels from a stored day.
   pages/index.astro      The story form.        pages/submit.ts     Receives it.
   pages/thanks.astro     Confirmation.          pages/stories.astro Archive (flag).
   pages/admin/           Moderation panel, login and actions.
-  styles/global.css      Palette, typography, layout. Fonts are in public/fonts.
+  styles/global.css      Design tokens from the handoff, typography, layout. Fonts are in public/fonts.
 public/
   quick-exit.js          Leave-quickly button, double Escape, history-free navigation.
-  fonts/                 Nunito, self-hosted woff2 (SIL Open Font License).
+  fonts/                 Albert Sans variable, self-hosted woff2 (SIL Open Font License).
 deploy/                  Caddyfile, systemd unit, Dockerfile, step-by-step DEPLOY.md.
 docs/                    Moderation guide, community document, verification checklist.
 scripts/                 inspect-db.mjs (what the database holds), verify.mjs (headers, cookies, origins).
@@ -51,12 +53,16 @@ Then, in another terminal: `node scripts/verify.mjs` and `node scripts/inspect-d
 | Variable | Meaning | Default |
 |----------|---------|---------|
 | `ADMIN_PASSWORD` | Moderator password. Required; empty disables login. | (none) |
-| `PUBLIC_ARCHIVE` | `true` shows approved stories at `/stories`; `false` makes that URL a 404. | `false` |
+| `PUBLIC_ARCHIVE` | `true` shows approved stories at `/stories`; `false` makes that URL a 404. | `false` in code; `.env.example` ships `true` |
 | `DB_PATH` | SQLite file location. | `./data/tea-talks.sqlite` |
 | `QUICK_EXIT_URL` | Where "Leave quickly" goes. | `https://www.weather.com/` |
 | `HOST`, `PORT` | Bind address. Keep on localhost behind Caddy. | `127.0.0.1`, `4321` |
 
 Changing any of these is a restart, not a rebuild.
+
+## Design
+
+The look follows the collective's handoff: Albert Sans as the one typeface, cream ground, terracotta for the single action, amber only for the quick exit and focus rings, no images or illustrations, no shadows, transitions limited to colour. The submission textarea fills the phone viewport so the button is reachable without scrolling. The public archive shows month and year only; the moderation panel shows "today", "yesterday" or the date, never a time, because no time is stored.
 
 ## Privacy design, in short
 
@@ -64,7 +70,7 @@ Changing any of these is a restart, not a rebuild.
 - **No inline scripts or styles**, so the CSP has no `'unsafe-inline'` anywhere. Astro is configured with `inlineStylesheets: 'never'`.
 - **No logging**: the app prints one line at startup and error messages without request data. The Node adapter has no request logger; Caddy's access log is set to `discard`; Caddy is told not to forward `X-Forwarded-For` at all.
 - **Cookies**: none on public pages. The admin cookie is `Path=/admin; HttpOnly; Secure; SameSite=Strict` with no expiry (it dies with the browser), holds a random token, and the session table lives in memory only. Sessions end after 30 minutes without activity. Every login attempt takes a fixed 500 ms whatever the outcome, so timing says nothing, and nothing about attempts is counted or stored.
-- **CSRF**: form posts must carry an `Origin` matching the `Host` header, and `Sec-Fetch-Site` may not be `cross-site`.
+- **CSRF**: form posts are refused when `Sec-Fetch-Site` says anything but same-origin; browsers without that header are checked by `Origin` against `Host`. Under `no-referrer`, browsers send `Origin: null` on form navigations, so `Sec-Fetch-Site` has to be the primary signal. Admin forms are additionally protected by the `SameSite=Strict` cookie.
 - **Spam**: a honeypot field with a meaningless name so browser autofill never fills it. No rate limiting, because rate limiting needs to know who is asking.
 - **Deletion**: `DELETE FROM`, with `secure_delete=ON` so freed pages are zeroed, `journal_mode=DELETE` so no write-ahead log lingers, and `auto_vacuum=FULL`.
 - **Random ids** (`WITHOUT ROWID` table) so nothing, not even the row order on disk, reveals when a story arrived within its day.

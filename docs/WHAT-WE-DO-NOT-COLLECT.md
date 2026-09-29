@@ -34,7 +34,7 @@ That is the entire record. Anyone with access to the database can confirm this: 
 
 A person from the collective reads it. They approve it for sharing, or they delete it. Deleting is real: the story is removed from the database and the freed space is overwritten. There is no bin, no archive of removed stories, no copy.
 
-If we share stories publicly, we share only the words and the date.
+If we share stories publicly, we share only the words and the month they arrived. Not even the day.
 
 ## The quick exit
 

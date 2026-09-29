@@ -1,13 +1,11 @@
 ---
 import Base from '../layouts/Base.astro';
-import Cup from '../components/Cup.astro';
 import { copy } from '../copy';
 ---
-<Base title={copy.notFound.title}>
-  <section class="hero">
-    <Cup class="cup" />
+<Base>
+  <section class="centered centered-narrow">
     <h1>{copy.notFound.heading}</h1>
     <p class="lead">{copy.notFound.body}</p>
+    <p class="return"><a class="link" href="/" data-replace>{copy.notFound.backHome}</a></p>
   </section>
-  <p><a class="btn btn-quiet" href="/" data-replace>{copy.notFound.backHome}</a></p>
 </Base>

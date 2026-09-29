@@ -62,17 +62,23 @@ const crossSitePage = page(copy.crossSite.title, copy.crossSite.heading, copy.cr
 const SAFE_METHODS = new Set(['GET', 'HEAD', 'OPTIONS']);
 
 /**
- * A browser always sends Origin on a form POST and a page on another site cannot
- * forge it. It must match the host this request was addressed to. Sec-Fetch-Site,
- * when a browser sends it, must not say cross-site either.
+ * Cross-site check for form posts.
+ * Sec-Fetch-Site is sent by every current browser and cannot be set by a script,
+ * so it is the primary signal: only same-origin (or a direct user action, "none") passes.
+ * Older browsers without it fall back to Origin against Host. Under our
+ * Referrer-Policy: no-referrer, browsers send "Origin: null" on plain form
+ * navigations, so a null or missing Origin cannot be checked and is let through;
+ * the admin forms are still protected by the SameSite=Strict cookie, and the
+ * public form by the honeypot.
  */
 function isCrossSite(request: Request): boolean {
   if (SAFE_METHODS.has(request.method)) return false;
   const fetchSite = request.headers.get('sec-fetch-site');
-  if (fetchSite && fetchSite !== 'same-origin' && fetchSite !== 'none') return true;
+  if (fetchSite) return fetchSite !== 'same-origin' && fetchSite !== 'none';
   const origin = request.headers.get('origin');
+  if (!origin || origin === 'null') return false;
   const host = request.headers.get('x-forwarded-host') ?? request.headers.get('host');
-  if (!origin || !host) return true;
+  if (!host) return false;
   try {
     return new URL(origin).host !== host;
   } catch {

@@ -13,17 +13,17 @@ If the password does not work, nothing bad has happened: just try again. Nobody 
 
 ## What you see
 
-**Waiting to be read** is the list of new stories. Each one shows the text and the day it arrived. That is genuinely all there is. There is no name, no email, no location, no time of day. If someone asks you "who sent this?", the honest answer is "there is no way to know, and we built it that way on purpose".
+The **Waiting** tab lists new stories, with a count. Each one shows the text and the day it arrived ("Received today", "Received yesterday", or the date). That is genuinely all there is. There is no name, no email, no location, no time of day. If someone asks you "who sent this?", the honest answer is "there is no way to know, and we built it that way on purpose".
 
-**Approved** is the list of stories you have already accepted.
+The **Approved** tab lists stories you have already accepted.
 
-## The two buttons
+## The buttons
 
-**Approve** means "this can be shared". If the public archive is switched on, the story appears on the Stories page straight away. If the archive is off, approving just keeps the story for later. The panel tells you at the top which of the two is the case.
+**Approve** means "this can be shared". If the public archive is switched on, the story appears on the Stories page straight away, showing only the text and the month it arrived. If the archive is off, approving just keeps the story for later. The line at the bottom of the panel tells you which of the two is the case.
 
-**Delete** removes the story from the database completely. You are asked once to confirm. After that there is no recycle bin, no undo, and no copy anywhere. This is deliberate: something that no longer exists cannot be leaked or demanded.
+**Delete** removes the story from the database completely. The card asks once, right there, "Delete this story for good?" with **Keep it** and **Yes, delete it**. After that there is no recycle bin, no undo, and no copy anywhere. This is deliberate: something that no longer exists cannot be leaked or demanded.
 
-You can also delete an already approved story if you change your mind. It disappears from the Stories page immediately.
+**Unpublish**, on the Approved tab, moves a story back to Waiting. It disappears from the Stories page immediately. From Waiting you can then delete it if you change your mind about it.
 
 ## What to look for before approving
 

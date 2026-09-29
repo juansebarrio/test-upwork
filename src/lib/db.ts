@@ -46,6 +46,9 @@ const stmts = {
     "INSERT INTO submissions (id, text, status, day) VALUES (?, ?, 'pending', ?)",
   ),
   approve: db.prepare<[string]>("UPDATE submissions SET status = 'approved' WHERE id = ?"),
+  unpublish: db.prepare<[string]>("UPDATE submissions SET status = 'pending' WHERE id = ?"),
+  countApproved: db.prepare("SELECT count(*) AS n FROM submissions WHERE status = 'approved'"),
+  approvedPage: db.prepare<[number, number]>("SELECT id, text, status, day FROM submissions WHERE status = 'approved' ORDER BY day DESC, id LIMIT ? OFFSET ?"),
   remove: db.prepare<[string]>('DELETE FROM submissions WHERE id = ?'),
   byId: db.prepare<[string]>('SELECT id, text, status, day FROM submissions WHERE id = ?'),
   // Within a day the order is by random id, i.e. no order at all. That is intentional.
@@ -69,6 +72,20 @@ export function insertSubmission(text: string): void {
 
 export function approveSubmission(id: string): void {
   stmts.approve.run(id);
+}
+
+/** Back to the waiting list. The story stays in the database. */
+export function unpublishSubmission(id: string): void {
+  stmts.unpublish.run(id);
+}
+
+export function countApproved(): number {
+  return (stmts.countApproved.get() as { n: number }).n;
+}
+
+/** One page of the public archive, newest day first. */
+export function listApprovedPage(limit: number, offset: number): Submission[] {
+  return stmts.approvedPage.all(limit, offset) as Submission[];
 }
 
 /** Hard delete. The row is gone and its pages are zeroed (secure_delete). */

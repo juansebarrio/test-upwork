@@ -1,44 +1,42 @@
 ---
 /**
- * Page shell for every public page. Quick exit lives here so it is on every page.
+ * Page shell for every screen: header with the plain-text wordmark, the quick exit
+ * in its fixed corner, and a main column. The <title> is always just the site name,
+ * so a tab or history entry says nothing more than that.
  * No inline styles, no inline scripts (the Content-Security-Policy forbids them).
  */
 import '../styles/global.css';
 import { copy } from '../copy';
-import { config } from '../lib/config';
-import Cup from '../components/Cup.astro';
+import QuickExit from '../components/QuickExit.astro';
 
 interface Props {
-  title: string;
-  /** Hide the quick exit (used on the moderation panel only). */
-  plain?: boolean;
+  /** Show the "Team" chip next to the wordmark (moderation screens). */
+  team?: boolean;
+  /** Use the wider 760px column (moderation list). */
+  wide?: boolean;
 }
-const { title, plain = false } = Astro.props;
+const { team = false, wide = false } = Astro.props;
 ---
 <!doctype html>
 <html lang={copy.lang}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={copy.siteDescription} />
     <meta name="referrer" content="no-referrer" />
     <meta name="robots" content="noindex, nofollow, noarchive" />
-    <title>{title}</title>
+    <title>{copy.siteName}</title>
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   </head>
   <body>
-    <header class="topbar">
-      <a class="brand" href="/" data-replace><Cup /><span>{copy.siteName}</span></a>
-      {!plain && (
-        <a class="quick-exit" href={config.quickExitUrl} data-quick-exit rel="noreferrer noopener">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4"/><path d="M10 17l5-5-5-5"/><path d="M15 12H3"/></svg>
-          <span>{copy.quickExit.label}</span>
-        </a>
-      )}
+    <header class="header">
+      <a class="wordmark" href="/" data-replace>{copy.siteName}</a>
+      {team && <span class="chip">{copy.admin.chip}</span>}
     </header>
-    <main class="wrap">
+    <QuickExit />
+    <main class:list={['page', { 'page-wide': wide }]}>
       <slot />
     </main>
-    <footer class="footer">{copy.footer.line}</footer>
-    {!plain && <script is:inline src="/quick-exit.js" defer></script>}
+    <script is:inline src="/quick-exit.js" defer></script>
   </body>
 </html>
