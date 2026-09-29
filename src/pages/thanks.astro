@@ -1,0 +1,12 @@
+---
+import Base from '../layouts/Base.astro';
+import { copy } from '../copy';
+// This page deliberately has no access to what was submitted.
+---
+<Base>
+  <section class="centered centered-narrow">
+    <h1>{copy.thanks.heading}</h1>
+    {copy.thanks.body.map((p) => <p class="lead">{p}</p>)}
+    <p class="return"><a class="link" href="/" data-replace>{copy.thanks.again}</a></p>
+  </section>
+</Base>

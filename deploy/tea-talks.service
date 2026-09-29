@@ -1,0 +1,53 @@
+# systemd unit for Tea Talks. Install with:
+#   sudo cp deploy/tea-talks.service /etc/systemd/system/
+#   sudo systemctl daemon-reload && sudo systemctl enable --now tea-talks
+[Unit]
+Description=Tea Talks (anonymous story page)
+After=network.target
+
+[Service]
+Type=simple
+User=teatalks
+Group=teatalks
+WorkingDirectory=/opt/tea-talks
+# Secrets and flags live here (ADMIN_PASSWORD, PUBLIC_ARCHIVE, DB_PATH, QUICK_EXIT_URL).
+EnvironmentFile=/etc/tea-talks/env
+Environment=NODE_ENV=production
+Environment=ASTRO_TELEMETRY_DISABLED=1
+ExecStart=/usr/bin/node /opt/tea-talks/server.mjs
+Restart=on-failure
+RestartSec=3
+
+# The app writes one startup line and, rarely, an error message. Never a request.
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=tea-talks
+
+# Database directory: /var/lib/tea-talks, created and owned by the service user.
+StateDirectory=tea-talks
+StateDirectoryMode=0700
+UMask=0077
+
+# Hardening: the process can read the app, write the database, and nothing else.
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectKernelLogs=true
+ProtectControlGroups=true
+ProtectClock=true
+ProtectHostname=true
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+RestrictNamespaces=true
+RestrictRealtime=true
+RestrictSUIDSGID=true
+LockPersonality=true
+SystemCallArchitectures=native
+CapabilityBoundingSet=
+AmbientCapabilities=
+
+[Install]
+WantedBy=multi-user.target

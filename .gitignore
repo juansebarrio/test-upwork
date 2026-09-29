@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.vercel/
+.astro/
+data/
+.env
+*.sqlite
+*.sqlite-journal

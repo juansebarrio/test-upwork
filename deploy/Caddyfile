@@ -1,0 +1,47 @@
+# Caddy configuration for Tea Talks.
+# Automatic HTTPS (Let's Encrypt), no access logs, no server banner.
+#
+# Replace tea.example.org with the real hostname, copy to /etc/caddy/Caddyfile,
+# then: sudo systemctl reload caddy
+
+{
+	# No admin API listening on the machine.
+	admin off
+
+	# Caddy's own runtime log (certificate renewals, startup problems).
+	# It never contains requests. Keep it to warnings and errors only.
+	log {
+		level WARN
+	}
+}
+
+tea.example.org {
+	# Access logging is off. Caddy does not write access logs unless a `log`
+	# directive asks for them; this block makes the choice explicit and
+	# survives someone pasting in a snippet later. Nothing about any request
+	# is written anywhere.
+	log {
+		output discard
+	}
+
+	header {
+		# Do not announce the server software.
+		-Server
+		# The app already sends these on every response. Setting them here too
+		# means even a misconfigured app, or a response Caddy generates itself,
+		# goes out with them. Identical values replace, so nothing is duplicated.
+		Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'self'; form-action 'self'; frame-ancestors 'none'; base-uri 'none'; object-src 'none'"
+		Referrer-Policy no-referrer
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options nosniff
+		defer
+	}
+
+	reverse_proxy 127.0.0.1:4321 {
+		# Caddy normally tells the app where the connection came from.
+		# The app never reads these, and it is better if it never receives them.
+		header_up -X-Forwarded-For
+		header_up -X-Real-IP
+		header_up -Forwarded
+	}
+}

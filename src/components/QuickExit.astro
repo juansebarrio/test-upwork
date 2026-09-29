@@ -1,0 +1,13 @@
+---
+/**
+ * The quick exit. One shared component, same corner on every screen.
+ * Outline pill: amber hairline, cream inside, the Lucide "log-out" icon (the only icon in the product).
+ * Never red, never a warning icon. Behaviour lives in /quick-exit.js; without JavaScript it is a plain link.
+ */
+import { copy } from '../copy';
+import { config } from '../lib/config';
+---
+<a class="quick-exit" href={config.quickExitUrl} data-quick-exit aria-label={copy.quickExit.ariaLabel} rel="noreferrer noopener">
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
+  <span>{copy.quickExit.label}</span>
+</a>
