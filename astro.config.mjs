@@ -13,6 +13,10 @@ export default defineConfig({
   // same security headers as pages (the adapter's standalone server sends none).
   // Vercel: scripts/vercel-headers.mjs adds the same headers to every route after the build.
   adapter: target === 'vercel' ? vercel() : node({ mode: 'middleware' }),
+  // A Vercel build is a preview by definition (read-only filesystem, no SQLite),
+  // so it marks itself: src/lib/config.ts then defaults DEMO_MODE to true unless
+  // the variable is set explicitly. The Node build carries no such mark.
+  vite: { define: { 'process.env.TEA_TALKS_VERCEL_BUILD': JSON.stringify(target === 'vercel' ? 'true' : '') } },
   // Cross-site form POSTs (CSRF) are rejected in src/middleware.ts by comparing the
   // Origin header with the Host header. Astro's own checkOrigin would need the site's
   // hostname baked in at build time (security.allowedDomains), which is easy to get

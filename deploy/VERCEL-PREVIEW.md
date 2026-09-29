@@ -15,7 +15,9 @@ collective's own server with SQLite, per `deploy/DEPLOY.md`.
 - The `better-sqlite3` module is never imported. Pages reach stories only through
   `src/lib/store.ts`, which in demo mode loads `src/lib/demo.ts` and never `src/lib/db.ts`.
 
-With `DEMO_MODE` unset or `false`, nothing changes from the normal behaviour.
+With `DEMO_MODE` unset or `false`, nothing changes from the normal behaviour on the VPS build. A build made with `npm run build:vercel` defaults to demo mode when the variable is unset, because a Vercel deployment has no writable disk and must never run the SQLite path; setting `DEMO_MODE=false` there is not supported.
+
+`vercel.json` in the repo sets the framework and the build command, so a project imported from the repository needs no manual build settings.
 
 ## Can anything persist in demo mode?
 

@@ -18,9 +18,10 @@ export const config = {
   /**
    * Preview mode for a temporary click-through (e.g. on Vercel). Nothing is stored:
    * the database module is never loaded, writes are no-ops, sample stories come from
-   * the copy file, and a banner says so on every page. Off by default.
+   * the copy file, and a banner says so on every page. Off by default, except in a
+   * build made for Vercel (see astro.config.mjs), where it is on unless DEMO_MODE is set.
    */
-  demoMode: bool(env.DEMO_MODE, false),
+  demoMode: bool(env.DEMO_MODE, process.env.TEA_TALKS_VERCEL_BUILD === 'true'),
   /** SQLite file. Relative paths resolve from the working directory. */
   dbPath: env.DB_PATH ?? './data/tea-talks.sqlite',
   /** Where the quick-exit button goes. A weather site is ordinary and unremarkable. */
