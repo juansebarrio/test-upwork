@@ -10,18 +10,20 @@ function bool(value: string | undefined, fallback = false): boolean {
   return value.trim().toLowerCase() === 'true';
 }
 
+/**
+ * Preview mode for a temporary click-through (e.g. on Vercel). Nothing is stored:
+ * the database module is never loaded, writes are no-ops, sample stories come from
+ * the copy file, and a banner says so on every page. Off by default, except in a
+ * build made for Vercel (see astro.config.mjs), where it is on unless DEMO_MODE is set.
+ */
+const demoMode = bool(env.DEMO_MODE, process.env.TEA_TALKS_VERCEL_BUILD === 'true');
+
 export const config = {
   /** Moderator password. Empty means the admin panel refuses every login. */
   adminPassword: env.ADMIN_PASSWORD ?? '',
-  /** Show approved stories at /stories. Off by default. */
-  publicArchive: bool(env.PUBLIC_ARCHIVE, false),
-  /**
-   * Preview mode for a temporary click-through (e.g. on Vercel). Nothing is stored:
-   * the database module is never loaded, writes are no-ops, sample stories come from
-   * the copy file, and a banner says so on every page. Off by default, except in a
-   * build made for Vercel (see astro.config.mjs), where it is on unless DEMO_MODE is set.
-   */
-  demoMode: bool(env.DEMO_MODE, process.env.TEA_TALKS_VERCEL_BUILD === 'true'),
+  /** Show approved stories at /stories. Off by default; on by default in demo mode, where it shows samples. */
+  publicArchive: bool(env.PUBLIC_ARCHIVE, demoMode),
+  demoMode,
   /** SQLite file. Relative paths resolve from the working directory. */
   dbPath: env.DB_PATH ?? './data/tea-talks.sqlite',
   /** Where the quick-exit button goes. A weather site is ordinary and unremarkable. */

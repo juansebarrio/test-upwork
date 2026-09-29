@@ -55,7 +55,7 @@ Then, in another terminal: `node scripts/verify.mjs` and `node scripts/inspect-d
 | Variable | Meaning | Default |
 |----------|---------|---------|
 | `ADMIN_PASSWORD` | Moderator password. Required; empty disables login. | (none) |
-| `PUBLIC_ARCHIVE` | `true` shows approved stories at `/stories`; `false` makes that URL a 404. | `false` in code; `.env.example` ships `true` |
+| `PUBLIC_ARCHIVE` | `true` shows approved stories at `/stories`; `false` makes that URL a 404. | `false` in code (`true` in demo mode); `.env.example` ships `true` |
 | `DB_PATH` | SQLite file location. | `./data/tea-talks.sqlite` |
 | `QUICK_EXIT_URL` | Where "Leave quickly" goes. | `https://www.weather.com/` |
 | `DEMO_MODE` | `true` makes a preview that stores nothing (see below). | `false` |

@@ -46,7 +46,7 @@ Two things Vercel does on its own, outside the app: it keeps platform request lo
    | `DEMO_MODE` | `true` |
    | `ADMIN_PASSWORD` | any preview password, e.g. from `openssl rand -base64 18`; not the real one |
    | `QUICK_EXIT_URL` | `https://www.weather.com/` or the site chosen for the region |
-   | `PUBLIC_ARCHIVE` | `true` so the sample stories page is visible |
+   | `PUBLIC_ARCHIVE` | `true` (already the default in demo mode; set `false` to hide the sample stories page) |
 
    `DB_PATH`, `HOST` and `PORT` are not needed. `DEPLOY_TARGET` is set by the build command; if you prefer `npm run build` as the command, add `DEPLOY_TARGET=vercel` as a variable instead.
 4. In the project settings, keep **Web Analytics**, **Speed Insights** and the **Vercel Toolbar** off. They would try to load scripts the CSP blocks, and they are the kind of thing this site must never have.
