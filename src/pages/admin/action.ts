@@ -1,6 +1,6 @@
 import type { APIRoute } from 'astro';
 import { endSession, isSignedIn } from '../../lib/auth';
-import { approveSubmission, deleteSubmission, unpublishSubmission } from '../../lib/db';
+import { getStore } from '../../lib/store';
 
 export const prerender = false;
 
@@ -19,9 +19,10 @@ export const POST: APIRoute = async ({ request, cookies, redirect }) => {
     return redirect('/admin', 303);
   }
   if (typeof id === 'string' && /^[A-Za-z0-9_-]{16}$/.test(id)) {
-    if (action === 'approve') approveSubmission(id);
-    else if (action === 'unpublish') unpublishSubmission(id);
-    else if (action === 'delete') deleteSubmission(id);
+    const store = await getStore();
+    if (action === 'approve') store.approveSubmission(id);
+    else if (action === 'unpublish') store.unpublishSubmission(id);
+    else if (action === 'delete') store.deleteSubmission(id);
   }
   return redirect(back, 303);
 };

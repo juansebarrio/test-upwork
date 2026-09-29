@@ -9,16 +9,10 @@ import { randomBytes } from 'node:crypto';
 import { mkdirSync } from 'node:fs';
 import { dirname } from 'node:path';
 import { config } from './config';
+import type { Store } from './store';
+import type { Submission } from './types';
 
-export type Status = 'pending' | 'approved';
-
-export interface Submission {
-  id: string;
-  text: string;
-  status: Status;
-  /** YYYY-MM-DD, UTC. */
-  day: string;
-}
+export type { Status, Submission } from './types';
 
 mkdirSync(dirname(config.dbPath), { recursive: true });
 
@@ -108,3 +102,17 @@ export function listApproved(): Submission[] {
 export function listApprovedNewestFirst(): Submission[] {
   return stmts.approvedNewest.all() as Submission[];
 }
+
+/** What pages use, through src/lib/store.ts. */
+export const dbStore: Store = {
+  insertSubmission,
+  approveSubmission,
+  unpublishSubmission,
+  deleteSubmission,
+  getSubmission,
+  listPending,
+  listApproved,
+  countApproved,
+  listApprovedPage,
+  today,
+};

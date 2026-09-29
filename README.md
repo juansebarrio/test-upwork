@@ -58,6 +58,8 @@ Then, in another terminal: `node scripts/verify.mjs` and `node scripts/inspect-d
 | `PUBLIC_ARCHIVE` | `true` shows approved stories at `/stories`; `false` makes that URL a 404. | `false` in code; `.env.example` ships `true` |
 | `DB_PATH` | SQLite file location. | `./data/tea-talks.sqlite` |
 | `QUICK_EXIT_URL` | Where "Leave quickly" goes. | `https://www.weather.com/` |
+| `DEMO_MODE` | `true` makes a preview that stores nothing (see below). | `false` |
+| `DEPLOY_TARGET` | Build-time only. `vercel` selects the Vercel adapter; anything else the Node adapter. | node |
 | `HOST`, `PORT` | Bind address. Keep on localhost behind Caddy. | `127.0.0.1`, `4321` |
 
 Changing any of these is a restart, not a rebuild.
@@ -78,6 +80,10 @@ The look follows the collective's handoff: Albert Sans as the one typeface, crea
 - **Deletion**: `DELETE FROM`, with `secure_delete=ON` so freed pages are zeroed, `journal_mode=DELETE` so no write-ahead log lingers, and `auto_vacuum=FULL`.
 - **Random ids** (`WITHOUT ROWID` table) so nothing, not even the row order on disk, reveals when a story arrived within its day.
 - **Quick exit**: one tap on the button, or Escape twice within a second (one press alone does nothing, so a stray key never erases a story). `location.replace` for the exit, for internal links and for the form (submitted in the background, then replaced), so a visit is one history entry and leaving overwrites it.
+
+## Temporary preview (DEMO_MODE)
+
+`DEMO_MODE=true` turns the app into a click-through that stores nothing: no database module is loaded, writes are no-ops, sample stories come from the copy file, and a banner on every page says so. `npm run build:vercel` builds the same repo for Vercel. Details, the exact environment variables, and the list of write paths that become no-ops are in `deploy/VERCEL-PREVIEW.md`. With the variable unset, nothing changes.
 
 ## Documents
 

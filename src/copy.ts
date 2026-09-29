@@ -129,4 +129,20 @@ export const copy = {
   footer: {
     line: 'Made with care by Shai Collective.',
   },
+
+  /** Only used when DEMO_MODE=true (a temporary preview that stores nothing). */
+  demo: {
+    banner: "Preview. Nothing written here is saved. The final site will live on the collective's own server.",
+    /** Three generic sample stories for the public page. */
+    stories: [
+      'There is a small café near where I live that opens early. I go before the city wakes up and drink one cup slowly. It is the only hour of the day that feels entirely mine.',
+      'My grandmother taught me to let the tea steep for exactly three minutes. I still count them in my head when I am nervous. It works more often than it should.',
+      'I wrote a letter I will never send. Writing it was enough. I am leaving a shorter version here, because putting it somewhere felt better than keeping it.',
+    ],
+    /** Two generic sample stories waiting in the moderation panel. */
+    pending: [
+      'Someone at the market gave me an extra orange today and said nothing. I have been thinking about it all afternoon. Small kindness is a language.',
+      'I have started walking home the long way, past the river. Nothing happens on that walk. That is exactly why I take it.',
+    ],
+  },
 } as const;

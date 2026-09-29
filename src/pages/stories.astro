@@ -2,7 +2,7 @@
 import Base from '../layouts/Base.astro';
 import { copy } from '../copy';
 import { config } from '../lib/config';
-import { countApproved, listApprovedPage } from '../lib/db';
+import { getStore } from '../lib/store';
 import { monthYear } from '../lib/format';
 
 // Behind a flag. When off, this URL behaves exactly like a page that does not exist.
@@ -11,11 +11,12 @@ if (!config.publicArchive) {
 }
 
 const PAGE_SIZE = 20;
-const total = countApproved();
+const store = await getStore();
+const total = store.countApproved();
 const pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 const requested = Number.parseInt(Astro.url.searchParams.get('page') ?? '1', 10);
 const page = Number.isFinite(requested) ? Math.min(Math.max(requested, 1), pages) : 1;
-const stories = listApprovedPage(PAGE_SIZE, (page - 1) * PAGE_SIZE);
+const stories = store.listApprovedPage(PAGE_SIZE, (page - 1) * PAGE_SIZE);
 ---
 <Base>
   <h1 class="h1-stories">{copy.stories.heading}</h1>

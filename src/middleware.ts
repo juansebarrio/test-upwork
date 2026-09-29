@@ -34,7 +34,8 @@ function page(_title: string, heading: string, body: string): string {
   // Bare page for the 500 and 403 cases, styled by /error.css. It still carries
   // the quick exit (link + the same script), since it can appear on a public screen.
   const exit = `<a class="quick-exit" href="${escapeHtml(config.quickExitUrl)}" data-quick-exit aria-label="${escapeHtml(copy.quickExit.ariaLabel)}" rel="noreferrer noopener">${escapeHtml(copy.quickExit.label)}</a>`;
-  return `<!doctype html><html lang="${copy.lang}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="referrer" content="no-referrer"><title>${escapeHtml(copy.siteName)}</title><link rel="stylesheet" href="/error.css"></head><body>${exit}<main class="wrap"><h1>${escapeHtml(heading)}</h1><p>${escapeHtml(body)}</p><p><a href="/">${escapeHtml(copy.notFound.backHome)}</a></p></main><script src="/quick-exit.js" defer></script></body></html>`;
+  const banner = config.demoMode ? `<p class="demo-banner">${escapeHtml(copy.demo.banner)}</p>` : '';
+  return `<!doctype html><html lang="${copy.lang}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="referrer" content="no-referrer"><title>${escapeHtml(copy.siteName)}</title><link rel="stylesheet" href="/error.css"></head><body>${exit}${banner}<main class="wrap"><h1>${escapeHtml(heading)}</h1><p>${escapeHtml(body)}</p><p><a href="/">${escapeHtml(copy.notFound.backHome)}</a></p></main><script src="/quick-exit.js" defer></script></body></html>`;
 }
 
 const errorPage = page(copy.error.title, copy.error.heading, copy.error.body);

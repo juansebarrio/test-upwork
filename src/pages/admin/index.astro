@@ -9,7 +9,7 @@ import Base from '../../layouts/Base.astro';
 import { copy } from '../../copy';
 import { config } from '../../lib/config';
 import { isSignedIn } from '../../lib/auth';
-import { listApproved, listPending, today } from '../../lib/db';
+import { getStore } from '../../lib/store';
 import { receivedLabel } from '../../lib/format';
 
 const signedIn = isSignedIn(Astro.cookies);
@@ -17,10 +17,11 @@ const failed = Astro.url.searchParams.get('login') === 'failed';
 const tab = Astro.url.searchParams.get('tab') === 'approved' ? 'approved' : 'waiting';
 const confirmId = Astro.url.searchParams.get('confirm');
 
-const pending = signedIn ? listPending() : [];
-const approved = signedIn ? listApproved() : [];
+const store = await getStore();
+const pending = signedIn ? store.listPending() : [];
+const approved = signedIn ? store.listApproved() : [];
 const stories = tab === 'approved' ? approved : pending;
-const now = today();
+const now = store.today();
 const a = copy.admin;
 const tabHref = tab === 'approved' ? '/admin?tab=approved' : '/admin';
 ---

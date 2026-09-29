@@ -7,6 +7,7 @@
  */
 import '../styles/global.css';
 import { copy } from '../copy';
+import { config } from '../lib/config';
 import QuickExit from '../components/QuickExit.astro';
 
 interface Props {
@@ -34,6 +35,7 @@ const { team = false, wide = false } = Astro.props;
       {team && <span class="chip">{copy.admin.chip}</span>}
     </header>
     <QuickExit />
+    {config.demoMode && <p class="demo-banner" role="note">{copy.demo.banner}</p>}
     <main class:list={['page', { 'page-wide': wide }]}>
       <slot />
     </main>

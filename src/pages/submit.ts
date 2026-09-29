@@ -5,7 +5,7 @@
  */
 import type { APIRoute } from 'astro';
 import { config } from '../lib/config';
-import { insertSubmission } from '../lib/db';
+import { getStore } from '../lib/store';
 
 export const prerender = false;
 
@@ -27,6 +27,6 @@ export const POST: APIRoute = async ({ request, redirect }) => {
   if (text.length === 0) return redirect('/?e=empty', 303);
   if (text.length > config.maxLength) return redirect('/?e=long', 303);
 
-  insertSubmission(text);
+  (await getStore()).insertSubmission(text);
   return redirect('/thanks', 303);
 };

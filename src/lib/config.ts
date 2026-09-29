@@ -15,6 +15,12 @@ export const config = {
   adminPassword: env.ADMIN_PASSWORD ?? '',
   /** Show approved stories at /stories. Off by default. */
   publicArchive: bool(env.PUBLIC_ARCHIVE, false),
+  /**
+   * Preview mode for a temporary click-through (e.g. on Vercel). Nothing is stored:
+   * the database module is never loaded, writes are no-ops, sample stories come from
+   * the copy file, and a banner says so on every page. Off by default.
+   */
+  demoMode: bool(env.DEMO_MODE, false),
   /** SQLite file. Relative paths resolve from the working directory. */
   dbPath: env.DB_PATH ?? './data/tea-talks.sqlite',
   /** Where the quick-exit button goes. A weather site is ordinary and unremarkable. */
@@ -27,6 +33,9 @@ export const config = {
   loginDelayMs: 500,
 };
 
+if (config.demoMode) {
+  console.error('[tea-talks] DEMO_MODE is on: nothing written to this instance is stored.');
+}
 if (!config.adminPassword) {
   // Startup-only notice. Contains no request data.
   console.error('[tea-talks] ADMIN_PASSWORD is not set; the moderation panel will not accept logins.');
