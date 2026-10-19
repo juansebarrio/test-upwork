@@ -33,9 +33,10 @@ function escapeHtml(s: string): string {
 function page(_title: string, heading: string, body: string): string {
   // Bare page for the 500 and 403 cases, styled by /error.css. It still carries
   // the quick exit (link + the same script), since it can appear on a public screen.
-  const exit = `<a class="quick-exit" href="${escapeHtml(config.quickExitUrl)}" data-quick-exit aria-label="${escapeHtml(copy.quickExit.ariaLabel)}" rel="noreferrer noopener">${escapeHtml(copy.quickExit.label)}</a>`;
+  const icon = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>`;
+  const exit = `<a class="quick-exit" href="${escapeHtml(config.quickExitUrl)}" data-quick-exit aria-label="${escapeHtml(copy.quickExit.ariaLabel)}" rel="noreferrer noopener">${icon}<span>${escapeHtml(copy.quickExit.label)}</span></a>`;
   const banner = config.demoMode ? `<p class="demo-banner">${escapeHtml(copy.demo.banner)}</p>` : '';
-  return `<!doctype html><html lang="${copy.lang}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="referrer" content="no-referrer"><title>${escapeHtml(copy.siteName)}</title><link rel="stylesheet" href="/error.css"></head><body>${exit}${banner}<main class="wrap"><h1>${escapeHtml(heading)}</h1><p>${escapeHtml(body)}</p><p><a href="/">${escapeHtml(copy.notFound.backHome)}</a></p></main><script src="/quick-exit.js" defer></script></body></html>`;
+  return `<!doctype html><html lang="${copy.lang}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="${escapeHtml(copy.siteDescription)}"><meta name="referrer" content="no-referrer"><meta name="robots" content="noindex, nofollow, noarchive"><title>${escapeHtml(copy.siteName)}</title><link rel="stylesheet" href="/error.css"></head><body>${exit}${banner}<main class="wrap"><h1>${escapeHtml(heading)}</h1><p>${escapeHtml(body)}</p><p><a href="/">${escapeHtml(copy.notFound.backHome)}</a></p></main><script src="/quick-exit.js" defer></script></body></html>`;
 }
 
 const errorPage = page(copy.error.title, copy.error.heading, copy.error.body);
