@@ -6,10 +6,13 @@
  *   DB_PATH=/var/lib/tea-talks/tea-talks.sqlite node scripts/sweep.mjs
  */
 import Database from 'better-sqlite3';
+import { mkdirSync } from 'node:fs';
+import { dirname } from 'node:path';
 
 const dbPath = process.env.DB_PATH ?? './data/tea-talks.sqlite';
 const DAYS = 30;
 
+mkdirSync(dirname(dbPath), { recursive: true });
 const db = new Database(dbPath);
 db.pragma('journal_mode = DELETE');
 db.pragma('secure_delete = ON');

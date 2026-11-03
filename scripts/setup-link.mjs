@@ -11,12 +11,15 @@
  * Proton, never through a chat that keeps history.
  */
 import Database from 'better-sqlite3';
+import { mkdirSync } from 'node:fs';
+import { dirname } from 'node:path';
 import { createHash, randomBytes } from 'node:crypto';
 
 const dbPath = process.env.DB_PATH ?? './data/tea-talks.sqlite';
 const site = (process.env.SITE_URL ?? 'http://127.0.0.1:4321').replace(/\/$/, '');
 const HOURS = 24;
 
+mkdirSync(dirname(dbPath), { recursive: true });
 const db = new Database(dbPath);
 db.pragma('journal_mode = DELETE');
 db.pragma('secure_delete = ON');
