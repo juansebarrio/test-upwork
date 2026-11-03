@@ -4,6 +4,7 @@ import { copy } from '../content/copy';
 import { about } from '../content/pages';
 ---
 <Base title={copy.titles.about} current="/about">
+  <h1 class="sr-only">{copy.titles.about}</h1>
   <section class="section shape s-disc-left">
     <h2>{about.nameHeading}</h2>
     <div class="stack">{about.name.map((p) => <p class="body">{p}</p>)}</div>

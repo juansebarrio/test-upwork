@@ -24,7 +24,7 @@ export interface ShellOptions {
 }
 
 export function quickExitHtml(): string {
-  return `<a class="quick-exit" href="${escapeHtml(config.quickExitUrl)}" data-quick-exit aria-label="${escapeHtml(copy.quickExit.ariaLabel)}" rel="noreferrer noopener">${LOGOUT_ICON}<span>${escapeHtml(copy.quickExit.label)}</span></a>`;
+  return `<a class="quick-exit" href="${escapeHtml(config.quickExitUrl)}" data-quick-exit rel="noreferrer noopener">${LOGOUT_ICON}<span>${escapeHtml(copy.quickExit.label)}</span></a>`;
 }
 
 export function headerHtml(opts: ShellOptions = {}): string {
@@ -44,8 +44,8 @@ export function headerHtml(opts: ShellOptions = {}): string {
     `<div class="site-header-end">${langs}${quickExitHtml()}</div>`,
     `</div>`,
     `<nav class="site-nav" aria-label="Site">${nav}</nav>`,
-    `</header>`,
     config.demoMode ? `<p class="demo-banner" role="note">${escapeHtml(copy.demo.banner)}</p>` : '',
+    `</header>`,
   ].join('');
 }
 

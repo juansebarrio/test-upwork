@@ -49,6 +49,8 @@ function visibleText(html) {
   body = body.replace(/<div class="hp"[\s\S]*?<\/div>/gi, '');
   // hidden notes are not visible
   body = body.replace(/<p[^>]*\shidden[^>]*>[\s\S]*?<\/p>/gi, '');
+  // visitors' own words (stories, messages) are not copy
+  body = body.replace(/<p class="(story-text|card-text)">[\s\S]*?<\/p>/gi, '');
   const texts = [];
   for (const m of body.matchAll(/>([^<]+)</g)) {
     const t = norm(decode(m[1]));

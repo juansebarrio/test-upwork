@@ -4,6 +4,7 @@ import { copy } from '../content/copy';
 import { ourWork } from '../content/pages';
 ---
 <Base title={copy.titles.ourWork} current="/our-work">
+  <h1 class="sr-only">{copy.titles.ourWork}</h1>
   <section class="opening">
     <p class="opener">{ourWork.opener}</p>
   </section>

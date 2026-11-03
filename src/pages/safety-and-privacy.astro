@@ -4,6 +4,7 @@ import { copy } from '../content/copy';
 import { safety } from '../content/pages';
 ---
 <Base title={copy.titles.safety} current="/safety-and-privacy">
+  <h1 class="sr-only">{copy.titles.safety}</h1>
   <section class="opening shape s-ring-side" aria-label="Opening">
     {safety.opening.map((p) => <p class="body">{p}</p>)}
   </section>

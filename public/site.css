@@ -132,7 +132,7 @@ a { color: inherit; }
 .demo-banner {
   flex: none;
   max-width: none;
-  margin: 0;
+  margin: 4px -24px 0;
   padding: 8px 24px;
   background: var(--paper);
   border-top: 1px solid var(--hairline);
@@ -329,15 +329,17 @@ textarea:focus, input:focus { border-color: var(--amber); }
 .shape { position: relative; }
 .shape::before, .shape::after { content: ''; position: absolute; pointer-events: none; z-index: 0; border-radius: 50%; }
 .shape > * { position: relative; z-index: 1; }
+/* Positions are measured from the viewport edge (50% - 50vw = the page's left edge),
+   so a shape sits in the margin or is cut by the edge and never behind body text. */
 /* paper disc on cream, partly cut by the viewport edge */
-.s-disc-right::before { background: var(--paper); width: 240px; height: 240px; right: -170px; top: -40px; }
-.s-disc-left::before { background: var(--paper); width: 240px; height: 240px; left: -190px; top: 12px; }
+.s-disc-right::before { background: var(--paper); width: 240px; height: 240px; right: calc(50% - 50vw - 170px); top: -40px; }
+.s-disc-left::before { background: var(--paper); width: 200px; height: 200px; left: calc(50% - 50vw - 160px); top: -24px; }
 /* terracotta disc at 12% */
 .s-tint::before { background: var(--tint); width: 120px; height: 120px; left: -36px; top: -36px; }
 /* hairline ring */
 .s-ring::after { width: 60px; height: 60px; border: 1.5px solid var(--terracotta); right: -8px; top: -8px; }
-.s-ring-after::after { width: 60px; height: 60px; border: 1.5px solid var(--terracotta); right: 0; bottom: -80px; top: auto; }
-.s-ring-side::after { width: 60px; height: 60px; border: 1.5px solid var(--terracotta); right: -12px; top: 50%; transform: translateY(-50%); }
+.s-ring-after::after { width: 60px; height: 60px; border: 1.5px solid var(--terracotta); right: -30px; bottom: -44px; top: auto; }
+.s-ring-side::after { width: 60px; height: 60px; border: 1.5px solid var(--terracotta); right: -36px; top: -52px; }
 
 /* Home: vignettes, then the Tea Talks block (card on phones, band on desktop), welcome, held line, doors. */
 .home { display: flex; flex-direction: column; }
@@ -444,6 +446,7 @@ textarea:focus, input:focus { border-color: var(--amber); }
   .site-header { padding: 0 40px; }
   .site-header-row { min-height: 80px; }
   .site-nav { gap: 0 28px; margin: 0 0 8px; }
+  .demo-banner { margin: 4px -40px 0; }
   .page { padding-top: 32px; }
   .opener, .vignette { font-size: 30px; }
   .held { font-size: 40px; }
@@ -456,17 +459,18 @@ textarea:focus, input:focus { border-color: var(--amber); }
   .card-text { font-size: 16px; line-height: 1.65; }
   .site-footer { flex-direction: row; align-items: center; justify-content: space-between; padding: 24px 40px 40px; }
   /* shapes at full size */
-  .s-disc-right::before { width: 400px; height: 400px; right: -220px; top: -60px; }
-  .s-disc-left::before { width: 360px; height: 360px; left: -300px; top: 0; }
+  .s-disc-right::before { width: 400px; height: 400px; right: calc(50% - 50vw - 220px); top: -60px; }
+  .s-disc-left::before { width: 360px; height: 360px; left: calc(50% - 50vw - 180px); top: 0; }
   .s-tint::before { width: 200px; height: 200px; }
   .s-ring::after, .s-ring-after::after, .s-ring-side::after { width: 120px; height: 120px; }
   .s-ring::after { right: -160px; top: -20px; }
-  .s-ring-after::after { right: -40px; bottom: -120px; }
-  .s-ring-side::after { right: -170px; }
+  .s-ring-after::after { right: -180px; bottom: 0; }
+  .s-ring-side::after { right: -180px; top: 50%; transform: translateY(-50%); }
   /* Home, variant B: the Tea Talks block becomes a full-width paper band after the welcome. */
   .home-tea { order: 2; margin-top: 40px; width: 100vw; margin-left: calc(50% - 50vw); padding: 48px 0; background: var(--paper); overflow: hidden; }
   .home-tea .band { width: 100%; max-width: 640px; margin: 0 auto; padding: 0; background: transparent; border-radius: 0; }
-  .home-tea .band::before { display: block; }
+  /* on the paper band the disc is cream, otherwise it would not show */
+  .home-tea .band::before { display: block; background: var(--cream); right: calc(50% - 50vw - 120px); top: -80px; }
   .home-welcome { order: 1; margin-top: 40px; }
   .home-held { margin-top: 48px; }
 }

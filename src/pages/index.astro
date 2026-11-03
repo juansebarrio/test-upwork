@@ -5,6 +5,7 @@ import { home } from '../content/pages';
 import { ARROW_ICON } from '../lib/shell';
 ---
 <Base title={copy.siteName} current="/">
+  <h1 class="sr-only">{copy.siteName}</h1>
   <div class="home">
     <section class="home-vignettes" aria-label="Opening">
       {home.vignettes.map((v) => <p class="vignette">{v}</p>)}

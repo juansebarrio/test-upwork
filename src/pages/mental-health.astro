@@ -4,6 +4,7 @@ import { copy } from '../content/copy';
 import { mentalHealth } from '../content/pages';
 ---
 <Base title={copy.titles.mentalHealth} current="/mental-health">
+  <h1 class="sr-only">{copy.titles.mentalHealth}</h1>
   <section class="section shape s-ring-side">
     <h2>{mentalHealth.heading}</h2>
     <div class="stack">{mentalHealth.opening.map((p) => <p class="body">{p}</p>)}</div>

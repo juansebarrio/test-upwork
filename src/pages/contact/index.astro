@@ -29,6 +29,7 @@ if (Astro.request.method === 'POST') {
 const e = Astro.url.searchParams.get('e');
 ---
 <Base title={copy.titles.contact} current="/contact">
+  <h1 class="sr-only">{copy.titles.contact}</h1>
   <section class="opening shape s-ring-side" aria-label="Introduction">
     <p class="body">{contact.intro}</p>
   </section>
