@@ -85,7 +85,6 @@ export const copy = {
 
   quickExit: {
     label: 'Leave quickly',
-    ariaLabel: 'Leave this page quickly',
     hint: 'Press Esc twice, quickly, to leave for a weather page. Your text is cleared first.',
   },
 
