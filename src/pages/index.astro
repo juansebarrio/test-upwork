@@ -1,0 +1,46 @@
+---
+import Base from '../layouts/Base.astro';
+import { copy } from '../copy';
+import { config } from '../lib/config';
+
+// A validation hint may come back from /submit as ?e=empty or ?e=long.
+// Nothing the visitor wrote is ever part of a URL or echoed here.
+const e = Astro.url.searchParams.get('e');
+
+// The hidden "x9f3a" field below is the honeypot. Hidden from people; simple bots
+// fill every field. Its name is deliberately meaningless so browser autofill
+// (which guesses from names like "website", "email", "name") never touches it:
+// if it did, real stories would be dropped as spam. The name is checked in submit.ts.
+// This explanation lives here, in the frontmatter, so it is not sent to browsers.
+---
+<Base>
+  <h1>{copy.home.greeting}</h1>
+  {copy.home.intro.map((p) => <p class="lead">{p}</p>)}
+  <ul class="trust">
+    {copy.home.trust.map((line) => <li>{line}</li>)}
+  </ul>
+
+  <form class="write-form" method="post" action="/submit" data-replace-submit autocomplete="off" novalidate>
+    <label for="story" class="sr-only">{copy.home.textareaLabel}</label>
+    <textarea
+      id="story"
+      name="story"
+      maxlength={config.maxLength}
+      placeholder={copy.home.placeholder}
+      autocomplete="off"
+      spellcheck="false"
+      aria-describedby="story-note"
+    ></textarea>
+    <p class="field-note" id="story-note" role="status" data-error-empty hidden={!(e === 'empty')}>{copy.home.errors.empty}</p>
+    {e === 'long' && <p class="field-note" role="status">{copy.home.errors.long}</p>}
+
+    <div class="hp" aria-hidden="true">
+      <label for="x9f3a">{copy.home.honeypotLabel}</label>
+      <input type="text" id="x9f3a" name="x9f3a" tabindex="-1" autocomplete="off" autocapitalize="off" spellcheck="false" data-lpignore="true" data-1p-ignore="true" data-bwignore="true" />
+    </div>
+
+    <button type="submit" class="btn-primary">{copy.home.submit}</button>
+    <p class="field-note field-note-alert" role="alert" data-error-network hidden>{copy.home.errors.network}</p>
+    <p class="footnote">{copy.quickExit.hint}</p>
+  </form>
+</Base>

@@ -1,0 +1,42 @@
+---
+import Base from '../layouts/Base.astro';
+import { copy } from '../copy';
+import { config } from '../lib/config';
+import { getStore } from '../lib/store';
+import { monthYear } from '../lib/format';
+
+// Behind a flag. When off, this URL behaves exactly like a page that does not exist.
+if (!config.publicArchive) {
+  return new Response(null, { status: 404 });
+}
+
+const PAGE_SIZE = 20;
+const store = await getStore();
+const total = store.countApproved();
+const pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+const requested = Number.parseInt(Astro.url.searchParams.get('page') ?? '1', 10);
+const page = Number.isFinite(requested) ? Math.min(Math.max(requested, 1), pages) : 1;
+const stories = store.listApprovedPage(PAGE_SIZE, (page - 1) * PAGE_SIZE);
+---
+<Base>
+  <h1 class="h1-stories">{copy.stories.heading}</h1>
+  <p class="lead lead-stories">{copy.stories.intro}</p>
+
+  {stories.length === 0 ? (
+    <p class="empty-line">{copy.stories.empty}</p>
+  ) : (
+    <ul class="story-list">
+      {stories.map((s) => (
+        <li class="story-item">
+          <p class="story-text">{s.text}</p>
+          <div class="story-when">{monthYear(s.day)}</div>
+        </li>
+      ))}
+    </ul>
+  )}
+
+  <nav class="pager" aria-label={copy.stories.pagerLabel}>
+    {page > 1 && <a class="ghost" href={page === 2 ? '/stories' : `/stories?page=${page - 1}`} data-replace>{copy.stories.newer}</a>}
+    {page < pages && <a class="ghost" href={`/stories?page=${page + 1}`} data-replace>{copy.stories.older}</a>}
+  </nav>
+</Base>

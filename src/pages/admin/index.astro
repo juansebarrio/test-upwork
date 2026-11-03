@@ -1,0 +1,115 @@
+---
+/**
+ * Moderation panel. Log in with the password from ADMIN_PASSWORD.
+ * Two tabs: Waiting (approve or delete) and Approved (unpublish back to waiting).
+ * Delete confirms inline on the card, never in a modal. Sessions end after 30
+ * minutes without activity; Log out is always visible in the tab row.
+ */
+import Base from '../../layouts/Base.astro';
+import { copy } from '../../copy';
+import { config } from '../../lib/config';
+import { isSignedIn } from '../../lib/auth';
+import { getStore } from '../../lib/store';
+import { receivedLabel } from '../../lib/format';
+
+const signedIn = isSignedIn(Astro.cookies);
+const failed = Astro.url.searchParams.get('login') === 'failed';
+const tab = Astro.url.searchParams.get('tab') === 'approved' ? 'approved' : 'waiting';
+const confirmId = Astro.url.searchParams.get('confirm');
+
+const store = await getStore();
+const pending = signedIn ? store.listPending() : [];
+const approved = signedIn ? store.listApproved() : [];
+const stories = tab === 'approved' ? approved : pending;
+const now = store.today();
+const a = copy.admin;
+const tabHref = tab === 'approved' ? '/admin?tab=approved' : '/admin';
+---
+<Base team wide>
+  {!signedIn ? (
+    <section class="login">
+      <h1>{a.loginHeading}</h1>
+      <p class="lead">{a.loginIntro}</p>
+      <form method="post" action="/admin/login">
+        <label for="password">{a.passwordLabel}</label>
+        <input type="password" id="password" name="password" required autocomplete="current-password" />
+        <button type="submit" class="btn-primary">{a.loginButton}</button>
+        {!config.adminPassword ? (
+          <p class="field-note field-note-alert" role="alert">{a.loginNotConfigured}</p>
+        ) : failed ? (
+          <p class="field-note field-note-alert" role="alert">{a.loginFailed}</p>
+        ) : (
+          <p class="field-note">{a.loginHint}</p>
+        )}
+      </form>
+    </section>
+  ) : (
+    <>
+      <nav class="tabs" aria-label={a.navLabel}>
+        <a class:list={['tab', { 'tab-active': tab === 'waiting' }]} href="/admin" aria-current={tab === 'waiting' ? 'page' : undefined}>
+          {a.tabWaiting}
+          {pending.length > 0 && <span class="count">{pending.length}</span>}
+        </a>
+        <a class:list={['tab', { 'tab-active': tab === 'approved' }]} href="/admin?tab=approved" aria-current={tab === 'approved' ? 'page' : undefined}>
+          {a.tabApproved}
+        </a>
+        <form method="post" action="/admin/action" class="tabs-end">
+          <input type="hidden" name="action" value="logout" />
+          <button type="submit" class="ghost">{a.logout}</button>
+        </form>
+      </nav>
+
+      {stories.length === 0 ? (
+        <section class="empty">
+          <h2>{tab === 'approved' ? a.approvedEmpty : a.pendingEmpty}</h2>
+          <p class="lead">{tab === 'approved' ? a.approvedEmptyBody : a.pendingEmptyBody}</p>
+        </section>
+      ) : (
+        <ul class="cards">
+          {stories.map((s) => (
+            <li class="card">
+              <p class="card-text">{s.text}</p>
+              {confirmId === s.id ? (
+                <div class="confirm">
+                  <span class="confirm-text">{a.confirmDeleteHeading}</span>
+                  <a class="ghost-btn" href={tabHref}>{a.confirmDeleteNo}</a>
+                  <form method="post" action="/admin/action">
+                    <input type="hidden" name="action" value="delete" />
+                    <input type="hidden" name="id" value={s.id} />
+                    <input type="hidden" name="tab" value={tab} />
+                    <button type="submit" class="btn-outline">{a.confirmDeleteYes}</button>
+                  </form>
+                </div>
+              ) : (
+                <div class="card-row">
+                  <div class="card-meta">{receivedLabel(s.day, now)}</div>
+                  <div class="card-actions">
+                    {tab === 'approved' ? (
+                      <form method="post" action="/admin/action">
+                        <input type="hidden" name="action" value="unpublish" />
+                        <input type="hidden" name="id" value={s.id} />
+                        <input type="hidden" name="tab" value="approved" />
+                        <button type="submit" class="ghost-btn">{a.unpublish}</button>
+                      </form>
+                    ) : (
+                      <>
+                        <a class="ghost-btn" href={`/admin?confirm=${s.id}`}>{a.delete}</a>
+                        <form method="post" action="/admin/action">
+                          <input type="hidden" name="action" value="approve" />
+                          <input type="hidden" name="id" value={s.id} />
+                          <button type="submit" class="btn-approve">{a.approve}</button>
+                        </form>
+                      </>
+                    )}
+                  </div>
+                </div>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
+
+      <p class="footnote footnote-left">{config.publicArchive ? a.archiveOn : a.archiveOff} {a.sessionNote}</p>
+    </>
+  )}
+</Base>
