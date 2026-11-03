@@ -1,0 +1,20 @@
+---
+import Base from '../layouts/Base.astro';
+import { copy } from '../content/copy';
+import { mentalHealth } from '../content/pages';
+---
+<Base title={copy.titles.mentalHealth} current="/mental-health">
+  <section class="section shape s-ring-side">
+    <h2>{mentalHealth.heading}</h2>
+    <div class="stack">{mentalHealth.opening.map((p) => <p class="body">{p}</p>)}</div>
+  </section>
+  <section class="section">
+    <h2>{mentalHealth.circlesHeading}</h2>
+    <div class="stack">{mentalHealth.circles.map((p) => <p class="body">{p}</p>)}</div>
+  </section>
+  <section class="section">
+    <h2>{mentalHealth.resourcesHeading}</h2>
+    <div class="stack">{mentalHealth.resources.map((p) => <p class="body">{p}</p>)}</div>
+    <ul class="rows">{mentalHealth.rows.map((r) => <li>{r}</li>)}</ul>
+  </section>
+</Base>

@@ -1,0 +1,47 @@
+---
+import Base from '../layouts/Base.astro';
+import { copy } from '../content/copy';
+import { config } from '../lib/config';
+
+// A validation hint may come back from /submit as ?e=empty or ?e=long.
+// Nothing the visitor wrote is ever part of a URL or echoed here.
+const e = Astro.url.searchParams.get('e');
+const t = copy.teaTalks;
+
+// The hidden "x9f3a" field below is the honeypot. Hidden from people; simple bots
+// fill every field. Its name is deliberately meaningless so browser autofill
+// (which guesses from names like "website", "email", "name") never touches it:
+// if it did, real stories would be dropped as spam. The name is checked in submit.ts.
+---
+<Base title={copy.titles.teaTalks} noindex replaceLinks current="/tea-talks">
+  <section class="opening" aria-label="Welcome">
+    <h1 class="opener">{t.greeting}</h1>
+  </section>
+  <section class="section" aria-labelledby="space-heading">
+    <h2 id="space-heading">{t.heading}</h2>
+    <p class="body">{t.intro}</p>
+  </section>
+  <section class="section" aria-label="Our promise">
+    <div class="band">
+      <p class="body">{t.promise.lead}</p>
+      <ul class="rows">{t.promise.lines.map((l) => <li>{l}</li>)}</ul>
+    </div>
+  </section>
+  <section class="section">
+    <div class="stack">{t.below.map((p) => <p class="body">{p}</p>)}</div>
+  </section>
+
+  <form class="write-form section" method="post" action="/submit" data-replace-submit autocomplete="off" novalidate>
+    <label for="story">{t.textareaLabel}</label>
+    <textarea id="story" name="story" maxlength={config.maxLength} placeholder={t.placeholder} autocomplete="off" spellcheck="false" aria-describedby="story-note"></textarea>
+    <p class="field-note" id="story-note" role="status" data-error-empty hidden={!(e === 'empty')}>{t.errors.empty}</p>
+    {e === 'long' && <p class="field-note" role="status">{t.errors.long}</p>}
+    <div class="hp" aria-hidden="true">
+      <label for="x9f3a">{t.honeypotLabel}</label>
+      <input type="text" id="x9f3a" name="x9f3a" tabindex="-1" autocomplete="off" autocapitalize="off" spellcheck="false" data-lpignore="true" data-1p-ignore="true" data-bwignore="true" />
+    </div>
+    <button type="submit" class="btn-primary">{t.submit}</button>
+    <p class="field-note field-note-alert" role="alert" data-error-network hidden>{t.errors.network}</p>
+    <p class="footnote">{copy.quickExit.hint}</p>
+  </form>
+</Base>

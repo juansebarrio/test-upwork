@@ -1,27 +1,43 @@
-/* Quick exit and the story form.
- *  - Tapping a "Leave quickly" control clears every textarea, then replaces
- *    the current page with a weather site. One tap is enough.
+/* Quick exit, confirmation focus, and the story form.
+ *  - Tapping a "Leave quickly" control pauses every audio and video, clears every
+ *    field, changes the tab title, then replaces the current page with an ordinary
+ *    site. One tap is enough.
  *  - Pressing Escape TWICE within one second does the same. A single Escape
  *    does nothing, so a stray key press never throws away a half-written story.
  *  - Because we use location.replace, the current page disappears from the
- *    browser history: pressing Back on the weather site goes to wherever the
- *    visitor was before Tea Talks, not back here.
- *  - Internal links and the story form also navigate with location.replace,
- *    so a visit to several Tea Talks pages still occupies one history entry.
- *  - The form is sent in the background. An empty box shows a note under the
- *    textarea; a network failure keeps the text and shows a note under the button.
- *  Without JavaScript the controls are plain links and the form is a plain POST.
+ *    browser history: pressing Back on the exit site goes to wherever the
+ *    visitor was before, not back here.
+ *  - On the Tea Talks pages, links marked data-replace also navigate with
+ *    location.replace, so a visit to those pages occupies one history entry.
+ *  - The story form is sent in the background and the page replaced by the
+ *    confirmation. An empty box shows a note under the textarea; a network
+ *    failure keeps the text and shows a note under the button.
+ *  - A confirmation heading marked data-focus-on-load receives focus, so a
+ *    screen reader announces it without a gesture.
+ *  Without JavaScript the controls are plain links and the forms are plain POSTs.
  *  Nothing here is stored, sent elsewhere or counted; the only state is one
  *  timestamp in memory that dies with the page.
  */
 (function () {
   'use strict';
 
+  var focusTarget = document.querySelector('[data-focus-on-load]');
+  if (focusTarget && typeof focusTarget.focus === 'function') {
+    try { focusTarget.focus({ preventScroll: true }); } catch (e) { focusTarget.focus(); }
+  }
+
   var exits = document.querySelectorAll('[data-quick-exit]');
   if (!exits.length) return;
   var target = exits[0].getAttribute('href');
   var DOUBLE_PRESS_MS = 1000;
   var lastEscapeAt = 0;
+
+  function pauseMedia() {
+    var media = document.querySelectorAll('audio, video');
+    for (var i = 0; i < media.length; i++) {
+      try { media[i].pause(); } catch (e) { /* ignore */ }
+    }
+  }
 
   function clearText() {
     var areas = document.querySelectorAll('textarea');
@@ -31,6 +47,7 @@
   }
 
   function leave() {
+    pauseMedia();
     clearText();
     try { document.title = 'Weather'; } catch (e) { /* ignore */ }
     window.location.replace(target);
@@ -56,7 +73,7 @@
     }
   });
 
-  // Internal links: replace instead of push, so there is no trail to walk back through.
+  // Tea Talks pages: marked links replace instead of push, so there is no trail to walk back through.
   document.addEventListener('click', function (ev) {
     var a = ev.target && ev.target.closest ? ev.target.closest('a[data-replace]') : null;
     if (!a || ev.metaKey || ev.ctrlKey || ev.shiftKey || ev.button !== 0) return;

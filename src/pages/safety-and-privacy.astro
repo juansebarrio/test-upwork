@@ -1,0 +1,15 @@
+---
+import Base from '../layouts/Base.astro';
+import { copy } from '../content/copy';
+import { safety } from '../content/pages';
+---
+<Base title={copy.titles.safety} current="/safety-and-privacy">
+  <section class="opening shape s-ring-side" aria-label="Opening">
+    {safety.opening.map((p) => <p class="body">{p}</p>)}
+  </section>
+  <section class="section"><h2>{safety.keepsHeading}</h2><p class="body">{safety.keeps}</p></section>
+  <section class="section"><h2>{safety.neverHeading}</h2><p class="body">{safety.never}</p></section>
+  <section class="section"><h2>{safety.leavingHeading}</h2><p class="body">{safety.leaving}</p></section>
+  <section class="section"><h2>{safety.controlHeading}</h2><p class="body">{safety.control}</p></section>
+  <section class="section"><h2>{safety.publicHeading}</h2><p class="body">{safety.public}</p></section>
+</Base>

@@ -1,6 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
-import { copy } from '../copy';
+import { copy } from '../content/copy';
 import { config } from '../lib/config';
 import { getStore } from '../lib/store';
 import { monthYear } from '../lib/format';
@@ -11,23 +11,34 @@ if (!config.publicArchive) {
 }
 
 const PAGE_SIZE = 20;
+const all = Astro.url.searchParams.get('all') === '1';
+const lang = all ? null : copy.lang;
 const store = await getStore();
-const total = store.countApproved();
+const total = store.countApproved(lang);
 const pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 const requested = Number.parseInt(Astro.url.searchParams.get('page') ?? '1', 10);
 const page = Number.isFinite(requested) ? Math.min(Math.max(requested, 1), pages) : 1;
-const stories = store.listApprovedPage(PAGE_SIZE, (page - 1) * PAGE_SIZE);
+const stories = store.listApprovedPage(lang, PAGE_SIZE, (page - 1) * PAGE_SIZE);
+
+function href(p: number): string {
+  const q = new URLSearchParams();
+  if (p > 1) q.set('page', String(p));
+  if (all) q.set('all', '1');
+  const s = q.toString();
+  return '/stories' + (s ? `?${s}` : '');
+}
 ---
-<Base>
-  <h1 class="h1-stories">{copy.stories.heading}</h1>
-  <p class="lead lead-stories">{copy.stories.intro}</p>
+<Base title={copy.titles.stories} noindex replaceLinks wide current="/tea-talks">
+  <h1 class="title">{copy.stories.heading}</h1>
+  <p class="body">{copy.stories.intro}</p>
+  {!all && <p class="lang-note">{copy.stories.langNote} <a href="/stories?all=1" data-replace>{copy.stories.showAll}</a></p>}
 
   {stories.length === 0 ? (
     <p class="empty-line">{copy.stories.empty}</p>
   ) : (
     <ul class="story-list">
       {stories.map((s) => (
-        <li class="story-item">
+        <li class="story-item" lang={s.lang}>
           <p class="story-text">{s.text}</p>
           <div class="story-when">{monthYear(s.day)}</div>
         </li>
@@ -36,7 +47,7 @@ const stories = store.listApprovedPage(PAGE_SIZE, (page - 1) * PAGE_SIZE);
   )}
 
   <nav class="pager" aria-label={copy.stories.pagerLabel}>
-    {page > 1 && <a class="ghost" href={page === 2 ? '/stories' : `/stories?page=${page - 1}`} data-replace>{copy.stories.newer}</a>}
-    {page < pages && <a class="ghost" href={`/stories?page=${page + 1}`} data-replace>{copy.stories.older}</a>}
+    {page > 1 && <a class="ghost" href={href(page - 1)} data-replace>{copy.stories.newer}</a>}
+    {page < pages && <a class="ghost" href={href(page + 1)} data-replace>{copy.stories.older}</a>}
   </nav>
 </Base>

@@ -1,12 +1,12 @@
 ---
 import Base from '../layouts/Base.astro';
-import { copy } from '../copy';
+import { copy } from '../content/copy';
 // This page deliberately has no access to what was submitted.
+// The heading receives focus on load (quick-exit.js), so a screen reader announces it.
 ---
-<Base>
-  <section class="centered centered-narrow">
-    <h1>{copy.thanks.heading}</h1>
-    {copy.thanks.body.map((p) => <p class="lead">{p}</p>)}
-    <p class="return"><a class="link" href="/" data-replace>{copy.thanks.again}</a></p>
+<Base title={copy.titles.teaTalks} noindex replaceLinks>
+  <section class="centered" aria-live="polite">
+    <h1 id="confirmation" tabindex="-1" data-focus-on-load>{copy.thanks.heading}</h1>
+    <p class="return"><a class="link" href="/tea-talks" data-replace>{copy.thanks.again}</a></p>
   </section>
 </Base>
