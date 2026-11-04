@@ -73,8 +73,8 @@ through the forms, then the scripts and the commands below. Demo mode: `DEMO_MOD
 
 | # | Result | Evidence |
 |---|---|---|
-| F1 | Pass | verify.mjs asserts no `X-Robots-Tag` and no robots meta on `/`, `/about`, `/our-work`, `/safety-and-privacy`, `/contact`, `/contact/sent`, `/mental-health`. `/robots.txt` is allow-all. |
-| F2 | Pass | `/tea-talks`, `/thanks`, `/stories`, `/stories?page=2`, `/stories?all=1` carry `X-Robots-Tag: noindex, nofollow` and `<meta name="robots" content="noindex, nofollow">`. Also kept on `/admin/*` and on every error response (an existing privacy property, see "Differences" below). |
+| F1 | Pass | verify.mjs asserts no `X-Robots-Tag` and no robots meta on `/`, `/about`, `/our-work`, `/safety-and-privacy`, `/contact`, `/mental-health`. `/robots.txt` is allow-all. |
+| F2 | Pass | `/tea-talks`, `/thanks`, `/stories`, `/stories?page=2`, `/stories?all=1`, `/contact/sent` carry `X-Robots-Tag: noindex, nofollow` and `<meta name="robots" content="noindex, nofollow">`. Also kept on `/admin/*` and on every error response (an existing privacy property, see "Differences" below). |
 | F3 | Pass | `/robots.txt` → `User-agent: *` / `Disallow:`; verify.mjs asserts none of the paths is listed. |
 | F6 | Pass | "When someone asks for a story to be taken down" in `docs/MODERATION-GUIDE.md`. |
 
@@ -128,7 +128,7 @@ All pending server, by definition. What M2 delivers for them: `deploy/DEPLOY.md`
 ## Differences from the prompt, kept on purpose
 
 - **`connect-src 'self'` instead of `'none'`** (B1): needed for the background submit that keeps one history entry on the Tea Talks pages. Still same-origin only.
-- **`/admin/*` and error responses stay `noindex`**: the prompt says only the Tea Talks routes carry it. Keeping the panel and the 403/404/500 pages out of search is an existing privacy property, so it stays; `scripts/verify.mjs` asserts this exact set and the six content pages plus `/contact/sent` and `/robots.txt` are indexable.
+- **`/admin/*` and error responses stay `noindex`**: the prompt says only the Tea Talks routes carry it. Keeping the panel and the 403/404/500 pages out of search is an existing privacy property, so it stays; `scripts/verify.mjs` asserts this exact set and the six content pages and `/robots.txt` are indexable; `/contact/sent` carries noindex like `/thanks`.
 - **Four tabs** (D1 says three): Messages added as the prompt asks.
 
 ## Design notes

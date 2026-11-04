@@ -175,7 +175,7 @@ a { color: inherit; }
 h1.title { font-size: 24px; line-height: 1.3; font-weight: 600; }
 h2 { font-size: 24px; line-height: 1.3; font-weight: 600; }
 .label { font-size: 13px; font-weight: 500; letter-spacing: 0.04em; color: var(--amber); text-transform: none; }
-.body, .section p, .lead { font-size: 16px; line-height: 1.6; }
+.body, .section p:not(.opener), .lead { font-size: 16px; line-height: 1.6; }
 .helper { font-size: 14px; line-height: 1.5; color: var(--ink-70); }
 .alert { font-size: 14px; line-height: 1.5; color: var(--terracotta); }
 .stack > * + * { margin-top: 16px; }
@@ -263,7 +263,7 @@ h2 { font-size: 24px; line-height: 1.3; font-weight: 600; }
 .return { margin-top: 28px; }
 
 /* Forms */
-label { display: block; font-size: 13px; font-weight: 500; letter-spacing: 0.04em; color: var(--amber); margin: 24px 0 8px; }
+label { display: block; font-size: 14px; font-weight: 500; color: var(--ink); margin: 24px 0 8px; }
 textarea, input[type='text'], input[type='password'] {
   width: 100%;
   background: var(--paper);
@@ -450,7 +450,7 @@ textarea:focus, input:focus { border-color: var(--amber); }
   .page { padding-top: 32px; }
   .opener, .vignette { font-size: 30px; }
   .held { font-size: 40px; }
-  .body, .section p, .lead, .rows li, .cards-doors p { font-size: 17px; }
+  .body, .section p:not(.opener), .lead, .rows li, .cards-doors p { font-size: 17px; }
   .btn-primary, .btn-secondary { width: auto; height: 60px; }
   .actions { flex-direction: row; align-items: center; gap: 16px; }
   .cards-doors { grid-template-columns: 1fr 1fr; gap: 16px; }

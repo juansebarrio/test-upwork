@@ -8,7 +8,7 @@ export const PUBLIC_PAGES = [
   { path: '/our-work', noindex: false, content: 'ourWork' },
   { path: '/safety-and-privacy', noindex: false, content: 'safety' },
   { path: '/contact', noindex: false, content: 'contact' },
-  { path: '/contact/sent', noindex: false, content: 'contactSent' },
+  { path: '/contact/sent', noindex: true, content: 'contactSent' },
   { path: '/mental-health', noindex: false, content: 'mentalHealth' },
   { path: '/tea-talks', noindex: true, content: 'teaTalks' },
   { path: '/thanks', noindex: true, content: 'thanks' },

@@ -12,9 +12,10 @@ wrote what, or who wrote to them through the contact page.
 | Route | What it is | Indexable |
 |---|---|---|
 | `/` | Home | yes |
-| `/about`, `/our-work`, `/safety-and-privacy`, `/contact`, `/contact/sent`, `/mental-health` | the content pages | yes |
+| `/about`, `/our-work`, `/safety-and-privacy`, `/contact`, `/mental-health` | the content pages | yes |
 | `/tea-talks` | the anonymous writing page | no |
 | `/thanks` | its confirmation | no |
+| `/contact/sent` | the contact confirmation | no |
 | `/stories`, `/stories?page=N`, `/stories?all=1` | public stories, behind `PUBLIC_ARCHIVE` (404 when off) | no |
 | `/admin`, `/admin/setup`, `/admin/passphrase` | the moderation panel | no |
 | `/robots.txt` | allow-all; the Tea Talks paths are deliberately not listed | n/a |
@@ -103,7 +104,7 @@ Changing any of these is a restart, not a rebuild.
 
 ## Privacy design, in short
 
-- **Headers on every response**, static files and error pages included: `Content-Security-Policy` with `'self'` only (no `'unsafe-inline'`), `Referrer-Policy: no-referrer`, `Strict-Transport-Security`, `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Permissions-Policy`, `Cache-Control: no-store` on pages. Caddy repeats the set at the edge.
+- **Headers on every response**, static files and error pages included: `Content-Security-Policy` with `'self'` only (no `'unsafe-inline'`; `connect-src 'self'` because the story form is sent in the background to the same origin, no other origin is reachable), `Referrer-Policy: no-referrer`, `Strict-Transport-Security`, `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Permissions-Policy`, `Cache-Control: no-store` on pages. Caddy repeats the set at the edge.
 - **No logging**: one line at startup, errors without request data. Caddy's access log is `discard`; Caddy strips `X-Forwarded-For`, `X-Real-IP` and `Forwarded`. The firewall logs nothing; there is no fail2ban.
 - **Cookies**: none on public pages. The admin cookie is `Path=/admin; HttpOnly; Secure; SameSite=Strict` with no expiry; the session lives in memory and ends after 30 minutes without activity.
 - **Passphrase**: chosen by the collective through a one-time link, stored as a scrypt hash, changeable in the panel. Login compares in constant time, takes a fixed 500 ms whatever the result, and counts and logs nothing.

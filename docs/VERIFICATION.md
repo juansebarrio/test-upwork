@@ -15,9 +15,10 @@ node --experimental-strip-types scripts/copy-check.mjs https://example.org      
 | Route | What it is | Indexable |
 |---|---|---|
 | `/` | Home | yes |
-| `/about`, `/our-work`, `/safety-and-privacy`, `/contact`, `/contact/sent`, `/mental-health` | the content pages | yes |
+| `/about`, `/our-work`, `/safety-and-privacy`, `/contact`, `/mental-health` | the content pages | yes |
 | `/tea-talks` | the anonymous writing page | **no** (meta + `X-Robots-Tag`) |
 | `/thanks` | its confirmation | **no** |
+| `/contact/sent` | the contact confirmation | **no** |
 | `/stories`, `/stories?page=N`, `/stories?all=1` | public stories, behind `PUBLIC_ARCHIVE` | **no** |
 | `/admin`, `/admin/setup`, `/admin/passphrase` | the panel | **no** (existing privacy property) |
 | `/robots.txt` | `User-agent: *` and an empty `Disallow:`; the Tea Talks paths are deliberately not listed | n/a |
@@ -103,7 +104,7 @@ curl -sI https://example.org/nothing-here
 Expect on all three, among others:
 
 ```
-content-security-policy: default-src 'self'; script-src 'self'; style-src 'self'; ... frame-ancestors 'none'; ...
+content-security-policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'self'; form-action 'self'; frame-ancestors 'none'; base-uri 'none'; object-src 'none'
 referrer-policy: no-referrer
 strict-transport-security: max-age=31536000; includeSubDomains
 x-content-type-options: nosniff
@@ -111,9 +112,11 @@ x-frame-options: DENY
 permissions-policy: camera=(), microphone=(), geolocation=(), interest-cohort=()
 ```
 
+`connect-src` is `'self'`, not `'none'`: the story form is sent in the background to the same origin so the confirmation can replace the page. No other origin is reachable.
+
 Pages carry `cache-control: no-store`; static files are cacheable. **No** `server:` line (Caddy's banner is removed). `verify.mjs` checks every route.
 
-Noindex: `curl -sI https://example.org/tea-talks | grep -i x-robots-tag` prints `noindex, nofollow`; the same on `/thanks`, `/stories`, `/stories?page=2`, `/admin`. On `/`, `/about` and the other content pages it prints nothing, and their source has no robots meta tag. `verify.mjs` asserts the exact set.
+Noindex: `curl -sI https://example.org/tea-talks | grep -i x-robots-tag` prints `noindex, nofollow`; the same on `/thanks`, `/stories`, `/stories?page=2`, `/contact/sent`, `/admin` and the 404 page. On `/`, `/about`, `/contact` and the other content pages it prints nothing, and their source has no robots meta tag. `verify.mjs` asserts the exact set.
 
 ## 7. Honeypot
 
