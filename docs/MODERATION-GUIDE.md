@@ -88,4 +88,4 @@ We can say, truthfully:
 We cannot promise:
 
 - that a story is safe to publish just because it has no name in it. That is exactly what moderation is for.
-- that the internet provider or the phone someone used keeps no trace. We control only our own server. The quick exit button and the Safety and Privacy page explain this to visitors.
+- that the internet provider or the phone someone used keeps no trace. We control only our own server. The quick exit button (it clears the fields and replaces the page with Google's homepage, which looks like a new tab) and the Safety and Privacy page explain this to visitors.

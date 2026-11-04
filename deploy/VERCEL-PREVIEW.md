@@ -44,7 +44,7 @@ Two things Vercel does on its own, outside the app: it keeps platform request lo
    |------|-------|
    | `DEMO_MODE` | `true` (already the default in a Vercel build) |
    | `ADMIN_PASSWORD` | any preview password, e.g. from `openssl rand -base64 18`; not the real passphrase |
-   | `QUICK_EXIT_URL` | `https://www.weather.com/` or the site chosen for the region |
+   | `QUICK_EXIT_URL` | `https://www.google.com/` (already the default; the collective chose Google's homepage) |
    | `PUBLIC_ARCHIVE` | `true` (already the default in demo mode; set `false` to hide the sample stories page) |
 
    `DB_PATH`, `HOST`, `PORT` and `CONTACT_EMAIL` are not needed.

@@ -30,8 +30,8 @@ export const config = {
   publicArchive: bool(env.PUBLIC_ARCHIVE, demoMode),
   /** SQLite file. Relative paths resolve from the working directory. */
   dbPath: env.DB_PATH ?? './data/tea-talks.sqlite',
-  /** Where the quick-exit button goes. A weather site is ordinary and unremarkable. */
-  quickExitUrl: env.QUICK_EXIT_URL ?? 'https://www.weather.com/',
+  /** Where the quick-exit button goes. The collective chose Google's homepage: with the www there is no redirect on the way out. */
+  quickExitUrl: env.QUICK_EXIT_URL ?? 'https://www.google.com/',
   /** Optional address shown on the contact page. Empty means the block is not rendered. */
   contactEmail: (env.CONTACT_EMAIL ?? '').trim(),
   /** Languages offered. One entry means no language switcher is rendered. */

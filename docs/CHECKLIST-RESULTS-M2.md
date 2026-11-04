@@ -42,10 +42,10 @@ through the forms, then the scripts and the commands below. Demo mode: `DEMO_MOD
 |---|---|---|
 | C1 | Pass | verify.mjs asserts `data-quick-exit` and the site header on every route, including `/admin`, `/nothing-here` (404) and the 403 page (`scripts/verify.mjs`, "quick-exit control present"). The 500 page uses the same `barePage()` shell as the 403. |
 | C2 | Pass | `scripts/quick-exit-check.mjs`: single Escape → still on `/tea-talks`, text kept; key held down (repeat events) → still on `/tea-talks`; two Escapes within a second → the exit site. |
-| C3 | Pass | Same script: `history.length` is the same number from arrival through submit, confirmation and exit (3 in the run: blank tab, the page before the site, the site), i.e. one entry for the whole visit; title "Weather"; Back lands on the page before the site ("news"). Fields cleared in `clearText()`. |
+| C3 | Pass | Same script: `history.length` is the same number from arrival through submit, confirmation and exit (3 in the run: blank tab, the page before the site, the site), i.e. one entry for the whole visit; title "Google"; Back lands on the page before the site ("news"). Fields cleared in `clearText()`. |
 | C4 | Pass (script) · W2 real media | `public/quick-exit.js` pauses every `<audio>` and `<video>` before leaving; verify.mjs fails any media element without `preload="none"` and `disablepictureinpicture` or with `autoplay`. No media is rendered in M2. |
 | C5 | Pass | Same script with JavaScript off: the pill navigates to the exit site; the story form posts and lands on `/thanks`. |
-| C6 | Pending collective | `QUICK_EXIT_URL` is read at runtime; the default is a placeholder weather site until the collective names the regional one. |
+| C6 | Pass | The collective chose Google's homepage. Default `https://www.google.com/` (with the www, so no redirect on the way out) in `src/lib/config.ts`, `.env.example`, `deploy/DEPLOY.md` and the Vercel preview; the exit uses `location.replace` under `Referrer-Policy: no-referrer` and `rel="noreferrer"`, so the destination receives no referrer. |
 
 ## D · Moderation panel
 
@@ -115,7 +115,7 @@ through the forms, then the scripts and the commands below. Demo mode: `DEMO_MOD
 
 ## K · Server and hosting
 
-All pending server, by definition. What M2 delivers for them: `deploy/DEPLOY.md` rewritten for 1984 Hosting (K1–K9, K11, K12 steps), `deploy/Caddyfile` (K4), `deploy/tea-talks.service` with `ProtectSystem=strict`, `NoNewPrivileges`, empty `CapabilityBoundingSet`, bound to `127.0.0.1:4321` (K5), the ufw and sshd steps (K6, K7), the setup-link procedure (K12), the Vercel deletion step (K10). The collective's key file `deploy/collective.pub` is not in the repository yet; the guide checks its fingerprint.
+All pending server, by definition. What M2 delivers for them: `deploy/DEPLOY.md` rewritten for 1984 Hosting (K1–K9, K11, K12 steps), `deploy/Caddyfile` (K4), `deploy/tea-talks.service` with `ProtectSystem=strict`, `NoNewPrivileges`, empty `CapabilityBoundingSet`, bound to `127.0.0.1:4321` (K5), the ufw and sshd steps (K6, K7), the setup-link procedure (K12), the Vercel deletion step (K10). The collective's key file `deploy/collective.pub` is in the repository (fingerprint `SHA256:ZjrsBaDvO5lZRItROMURKN7vN+aOFwzD8E11O027WE8`); the guide checks the fingerprint before and after copying it into `authorized_keys`.
 
 ## O · Process
 
@@ -138,4 +138,4 @@ All pending server, by definition. What M2 delivers for them: `deploy/DEPLOY.md`
 
 ## Could not make pass here
 
-Nothing in the M2 rows fails on the local build. The rows above marked pending need the real server (A8 timer, A9 journal, A10, A11, K-section), or the collective's input (C6 exit site, G4 email decision, H8 confirmation lines, I6 and O4 device passes, O3 phone autofill test).
+Nothing in the M2 rows fails on the local build. The rows above marked pending need the real server (A8 timer, A9 journal, A10, A11, K-section), or the collective's input (G4 email decision, H8 confirmation lines, I6 and O4 device passes, O3 phone autofill test).

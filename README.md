@@ -92,7 +92,7 @@ For the preview that stores nothing: `DEMO_MODE=true ADMIN_PASSWORD=anything npm
 |----------|---------|---------|
 | `PUBLIC_ARCHIVE` | `true` shows approved stories at `/stories`; `false` makes that URL a 404. | `false` (`true` in demo mode) |
 | `DB_PATH` | SQLite file location. | `./data/tea-talks.sqlite` |
-| `QUICK_EXIT_URL` | Where "Leave quickly" goes. | `https://www.weather.com/` |
+| `QUICK_EXIT_URL` | Where "Leave quickly" goes. | `https://www.google.com/` |
 | `CONTACT_EMAIL` | Optional address shown under the contact form. Unset means the block is not rendered. | unset |
 | `DEMO_MODE` | `true` makes a preview that stores nothing (see `deploy/VERCEL-PREVIEW.md`). | `false` (`true` in a Vercel build) |
 | `ADMIN_PASSWORD` | **Demo mode only.** The real site has no such variable; the passphrase is set through the setup link. | unset |

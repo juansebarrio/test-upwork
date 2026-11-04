@@ -49,7 +49,7 @@
   function leave() {
     pauseMedia();
     clearText();
-    try { document.title = 'Weather'; } catch (e) { /* ignore */ }
+    try { document.title = 'Google'; } catch (e) { /* ignore */ }
     window.location.replace(target);
   }
 

@@ -85,7 +85,7 @@ export const copy = {
 
   quickExit: {
     label: 'Leave quickly',
-    hint: 'Press Esc twice, quickly, to leave for a weather page. Your text is cleared first.',
+    hint: "Press Esc twice, quickly, to leave for Google's homepage. Your text is cleared first.",
   },
 
   notFound: {

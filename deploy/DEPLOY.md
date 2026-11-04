@@ -49,18 +49,27 @@ ufw status verbose          # must show "Logging: off"
 
 Do not install fail2ban: it keeps a log of addresses, which is exactly what this server must not do. Key-only SSH is the protection.
 
-Create the app user and give it the collective's key on day one. The key file `deploy/collective.pub` is in the repository; its fingerprint must read `SHA256:ZjrsBaDvO5lZRItROMURKN7vN+aOFwzD8E11O027WE8`.
+Create the app user and give it the collective's key on day one. The key file `deploy/collective.pub` is in the repository (one `ssh-ed25519` line). Its fingerprint must read `SHA256:ZjrsBaDvO5lZRItROMURKN7vN+aOFwzD8E11O027WE8`; the collective verified it on their side. Check it **before** copying, from your own checkout, and **again after** copying, on the server:
 
 ```bash
+# on your machine, in the repository checkout:
+ssh-keygen -lf deploy/collective.pub          # must print SHA256:ZjrsBaDvO5lZRItROMURKN7vN+aOFwzD8E11O027WE8
+scp deploy/collective.pub root@example.org:/root/collective.pub
+
+# on the server, as root:
 adduser --system --group --home /opt/tea-talks --shell /bin/bash teatalks
 mkdir -p /opt/tea-talks/.ssh
-# copy deploy/collective.pub from the repository to the server first, then:
-ssh-keygen -lf /path/to/collective.pub        # SHA256:ZjrsBaDvO5lZRItROMURKN7vN+aOFwzD8E11O027WE8
-cat /path/to/collective.pub >> /opt/tea-talks/.ssh/authorized_keys
+cat /root/collective.pub >> /opt/tea-talks/.ssh/authorized_keys
 cat ~/.ssh/authorized_keys >> /opt/tea-talks/.ssh/authorized_keys   # your own key, so you can still deploy
 chown -R teatalks:teatalks /opt/tea-talks/.ssh
 chmod 700 /opt/tea-talks/.ssh && chmod 600 /opt/tea-talks/.ssh/authorized_keys
+ssh-keygen -lf /opt/tea-talks/.ssh/authorized_keys   # one line per key; the collective's must again read SHA256:ZjrsBaDvO5lZRItROMURKN7vN+aOFwzD8E11O027WE8
+rm /root/collective.pub
 ```
+
+If either check prints a different fingerprint, stop: do not copy the key, and ask the collective to re-send it by a channel other than the one it came through.
+
+The same key is also the recipient for anything we later need to seal for the collective (a database export, a credential): `age -R deploy/collective.pub -o file.age file`. Nothing is sealed in this milestone; the note is here so the key's two uses are written down in one place.
 
 Harden sshd: no passwords, no root login. Test a new SSH session as `teatalks` **before** closing the root one.
 
@@ -131,7 +140,7 @@ Set these lines:
 
 ```
 PUBLIC_ARCHIVE=true            # or false, as the collective decided
-QUICK_EXIT_URL=https://...     # the neutral regional site the collective chose
+QUICK_EXIT_URL=https://www.google.com/   # the collective chose Google's homepage; keep the www, no redirect on the way out
 DB_PATH=/var/lib/tea-talks/tea-talks.sqlite
 HOST=127.0.0.1
 PORT=4321

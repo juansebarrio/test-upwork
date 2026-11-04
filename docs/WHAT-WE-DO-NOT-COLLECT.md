@@ -44,7 +44,7 @@ If you ever want a story taken down, write to us through the Contact page with a
 
 ## The quick exit
 
-Every page has a calm **Leave quickly** button, and pressing the Escape key twice does the same thing (twice, so that one accidental press does not throw away what you were writing). It clears anything you have typed and swaps this page for a weather site, in a way that the Back button will not bring you back here. Use it whenever you like. It is there for you, not for us.
+Every page has a calm **Leave quickly** button, and pressing the Escape key twice does the same thing (twice, so that one accidental press does not throw away what you were writing). It clears anything you have typed and replaces the page with Google's homepage, which looks like a new tab, in a way that the Back button will not bring you back here. Use it whenever you like. It is there for you, not for us.
 
 ## What we cannot control, said plainly
 
