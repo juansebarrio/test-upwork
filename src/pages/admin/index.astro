@@ -1,31 +1,49 @@
 ---
 /**
- * Moderation panel. Log in with the password from ADMIN_PASSWORD.
- * Two tabs: Waiting (approve or delete) and Approved (unpublish back to waiting).
- * Delete confirms inline on the card, never in a modal. Sessions end after 30
- * minutes without activity; Log out is always visible in the tab row.
+ * Moderation panel. Four tabs: Waiting (approve, reject, delete, edit), Approved
+ * (unpublish, delete), Rejected (restore, delete), Messages (replied, delete).
+ * Delete confirms inline on the card, never in a modal. Every action is a normal
+ * form POST. Sessions end after 30 minutes without activity; Log out is always visible.
  */
 import Base from '../../layouts/Base.astro';
-import { copy } from '../../copy';
+import { copy } from '../../content/copy';
 import { config } from '../../lib/config';
-import { isSignedIn } from '../../lib/auth';
+import { hasPassphrase, isSignedIn } from '../../lib/auth';
 import { getStore } from '../../lib/store';
 import { receivedLabel } from '../../lib/format';
+import type { Status } from '../../lib/types';
 
-const signedIn = isSignedIn(Astro.cookies);
-const failed = Astro.url.searchParams.get('login') === 'failed';
-const tab = Astro.url.searchParams.get('tab') === 'approved' ? 'approved' : 'waiting';
-const confirmId = Astro.url.searchParams.get('confirm');
-
-const store = await getStore();
-const pending = signedIn ? store.listPending() : [];
-const approved = signedIn ? store.listApproved() : [];
-const stories = tab === 'approved' ? approved : pending;
-const now = store.today();
 const a = copy.admin;
-const tabHref = tab === 'approved' ? '/admin?tab=approved' : '/admin';
+const store = await getStore();
+const signedIn = isSignedIn(Astro.cookies);
+const q = Astro.url.searchParams;
+const failed = q.get('login') === 'failed';
+const note = q.get('note');
+const TABS = ['waiting', 'approved', 'rejected', 'messages'] as const;
+type Tab = (typeof TABS)[number];
+const tab: Tab = (TABS as readonly string[]).includes(q.get('tab') ?? '') ? (q.get('tab') as Tab) : 'waiting';
+const confirmId = q.get('confirm');
+const editId = q.get('edit');
+const statusOf: Record<Exclude<Tab, 'messages'>, Status> = { waiting: 'pending', approved: 'approved', rejected: 'rejected' };
+
+const counts = signedIn
+  ? { waiting: store.countByStatus('pending'), approved: store.countByStatus('approved'), rejected: store.countByStatus('rejected'), messages: store.countMessages() }
+  : { waiting: 0, approved: 0, rejected: 0, messages: 0 };
+const stories = signedIn && tab !== 'messages' ? store.listByStatus(statusOf[tab]) : [];
+const messages = signedIn && tab === 'messages' ? store.listMessages() : [];
+const now = store.today();
+const tabHref = (t: Tab) => (t === 'waiting' ? '/admin' : `/admin?tab=${t}`);
+const labels: Record<Tab, string> = { waiting: a.tabWaiting, approved: a.tabApproved, rejected: a.tabRejected, messages: a.tabMessages };
+const empties: Record<Tab, [string, string]> = {
+  waiting: [a.pendingEmpty, a.pendingEmptyBody],
+  approved: [a.approvedEmpty, a.approvedEmptyBody],
+  rejected: [a.rejectedEmpty, a.rejectedEmptyBody],
+  messages: [a.messagesEmpty, a.messagesEmptyBody],
+};
+const isEmpty = tab === 'messages' ? messages.length === 0 : stories.length === 0;
+const configured = hasPassphrase(store);
 ---
-<Base team wide>
+<Base title={a.title} noindex wide>
   {!signedIn ? (
     <section class="login">
       <h1>{a.loginHeading}</h1>
@@ -34,10 +52,12 @@ const tabHref = tab === 'approved' ? '/admin?tab=approved' : '/admin';
         <label for="password">{a.passwordLabel}</label>
         <input type="password" id="password" name="password" required autocomplete="current-password" />
         <button type="submit" class="btn-primary">{a.loginButton}</button>
-        {!config.adminPassword ? (
+        {!configured ? (
           <p class="field-note field-note-alert" role="alert">{a.loginNotConfigured}</p>
         ) : failed ? (
           <p class="field-note field-note-alert" role="alert">{a.loginFailed}</p>
+        ) : note === 'set' ? (
+          <p class="field-note" role="status">{a.passphraseSet}</p>
         ) : (
           <p class="field-note">{a.loginHint}</p>
         )}
@@ -45,61 +65,56 @@ const tabHref = tab === 'approved' ? '/admin?tab=approved' : '/admin';
     </section>
   ) : (
     <>
+      <h1 class="sr-only">{a.title}</h1>
       <nav class="tabs" aria-label={a.navLabel}>
-        <a class:list={['tab', { 'tab-active': tab === 'waiting' }]} href="/admin" aria-current={tab === 'waiting' ? 'page' : undefined}>
-          {a.tabWaiting}
-          {pending.length > 0 && <span class="count">{pending.length}</span>}
-        </a>
-        <a class:list={['tab', { 'tab-active': tab === 'approved' }]} href="/admin?tab=approved" aria-current={tab === 'approved' ? 'page' : undefined}>
-          {a.tabApproved}
-        </a>
+        {TABS.map((t) => (
+          <a class:list={['tab', { 'tab-active': tab === t }]} href={tabHref(t)} aria-current={tab === t ? 'page' : undefined}>
+            {labels[t]}
+            {counts[t] > 0 && <span class="count">{counts[t]}</span>}
+          </a>
+        ))}
         <form method="post" action="/admin/action" class="tabs-end">
           <input type="hidden" name="action" value="logout" />
           <button type="submit" class="ghost">{a.logout}</button>
         </form>
       </nav>
 
-      {stories.length === 0 ? (
+      {note === 'changed' && <p class="field-note" role="status">{a.passphraseChanged}</p>}
+
+      {isEmpty ? (
         <section class="empty">
-          <h2>{tab === 'approved' ? a.approvedEmpty : a.pendingEmpty}</h2>
-          <p class="lead">{tab === 'approved' ? a.approvedEmptyBody : a.pendingEmptyBody}</p>
+          <h2>{empties[tab][0]}</h2>
+          <p class="lead">{empties[tab][1]}</p>
         </section>
-      ) : (
+      ) : tab === 'messages' ? (
         <ul class="cards">
-          {stories.map((s) => (
+          {messages.map((m) => (
             <li class="card">
-              <p class="card-text">{s.text}</p>
-              {confirmId === s.id ? (
+              <p class="card-text">{m.text}</p>
+              <p class="card-meta">{m.reply_to ? `${a.replyTo}: ${m.reply_to}` : a.noReplyTo}</p>
+              {confirmId === m.id ? (
                 <div class="confirm">
                   <span class="confirm-text">{a.confirmDeleteHeading}</span>
-                  <a class="ghost-btn" href={tabHref}>{a.confirmDeleteNo}</a>
+                  <a class="ghost-btn" href={tabHref(tab)}>{a.confirmDeleteNo}</a>
                   <form method="post" action="/admin/action">
-                    <input type="hidden" name="action" value="delete" />
-                    <input type="hidden" name="id" value={s.id} />
+                    <input type="hidden" name="action" value="delete-message" />
+                    <input type="hidden" name="id" value={m.id} />
                     <input type="hidden" name="tab" value={tab} />
                     <button type="submit" class="btn-outline">{a.confirmDeleteYes}</button>
                   </form>
                 </div>
               ) : (
                 <div class="card-row">
-                  <div class="card-meta">{receivedLabel(s.day, now)}</div>
+                  <div class="card-meta">{receivedLabel(m.day, now)}</div>
                   <div class="card-actions">
-                    {tab === 'approved' ? (
+                    <a class="ghost-btn" href={`/admin?tab=messages&confirm=${m.id}`}>{a.delete}</a>
+                    {m.reply_to && (
                       <form method="post" action="/admin/action">
-                        <input type="hidden" name="action" value="unpublish" />
-                        <input type="hidden" name="id" value={s.id} />
-                        <input type="hidden" name="tab" value="approved" />
-                        <button type="submit" class="ghost-btn">{a.unpublish}</button>
+                        <input type="hidden" name="action" value="replied" />
+                        <input type="hidden" name="id" value={m.id} />
+                        <input type="hidden" name="tab" value={tab} />
+                        <button type="submit" class="btn-approve">{a.replied}</button>
                       </form>
-                    ) : (
-                      <>
-                        <a class="ghost-btn" href={`/admin?confirm=${s.id}`}>{a.delete}</a>
-                        <form method="post" action="/admin/action">
-                          <input type="hidden" name="action" value="approve" />
-                          <input type="hidden" name="id" value={s.id} />
-                          <button type="submit" class="btn-approve">{a.approve}</button>
-                        </form>
-                      </>
                     )}
                   </div>
                 </div>
@@ -107,9 +122,86 @@ const tabHref = tab === 'approved' ? '/admin?tab=approved' : '/admin';
             </li>
           ))}
         </ul>
+      ) : (
+        <ul class="cards">
+          {stories.map((s) => (
+            <li class="card">
+              {editId === s.id ? (
+                <form method="post" action="/admin/action" class="edit-form">
+                  <label for={`edit-${s.id}`}>{a.editLabel}</label>
+                  <textarea id={`edit-${s.id}`} name="text" maxlength={config.maxLength} aria-describedby={`edit-note-${s.id}`}>{s.text}</textarea>
+                  <p class="field-note" id={`edit-note-${s.id}`}>{a.editNote}</p>
+                  <input type="hidden" name="action" value="save" />
+                  <input type="hidden" name="id" value={s.id} />
+                  <input type="hidden" name="tab" value={tab} />
+                  <div class="card-actions">
+                    <a class="ghost-btn" href={tabHref(tab)}>{a.cancel}</a>
+                    <button type="submit" class="btn-approve">{a.save}</button>
+                  </div>
+                </form>
+              ) : (
+                <>
+                  <p class="card-text">{s.text}</p>
+                  {confirmId === s.id ? (
+                    <div class="confirm">
+                      <span class="confirm-text">{a.confirmDeleteHeading}</span>
+                      <a class="ghost-btn" href={tabHref(tab)}>{a.confirmDeleteNo}</a>
+                      <form method="post" action="/admin/action">
+                        <input type="hidden" name="action" value="delete" />
+                        <input type="hidden" name="id" value={s.id} />
+                        <input type="hidden" name="tab" value={tab} />
+                        <button type="submit" class="btn-outline">{a.confirmDeleteYes}</button>
+                      </form>
+                    </div>
+                  ) : (
+                    <div class="card-row">
+                      <div class="card-meta">{receivedLabel(s.day, now)}</div>
+                      <div class="card-actions">
+                        <a class="ghost-btn" href={`${tabHref(tab)}${tab === 'waiting' ? '?' : '&'}confirm=${s.id}`}>{a.delete}</a>
+                        {tab === 'waiting' && (
+                          <>
+                            <a class="ghost-btn" href={`/admin?edit=${s.id}`}>{a.edit}</a>
+                            <form method="post" action="/admin/action">
+                              <input type="hidden" name="action" value="reject" />
+                              <input type="hidden" name="id" value={s.id} />
+                              <input type="hidden" name="tab" value={tab} />
+                              <button type="submit" class="btn-outline">{a.reject}</button>
+                            </form>
+                            <form method="post" action="/admin/action">
+                              <input type="hidden" name="action" value="approve" />
+                              <input type="hidden" name="id" value={s.id} />
+                              <input type="hidden" name="tab" value={tab} />
+                              <button type="submit" class="btn-approve">{a.approve}</button>
+                            </form>
+                          </>
+                        )}
+                        {tab === 'approved' && (
+                          <form method="post" action="/admin/action">
+                            <input type="hidden" name="action" value="unpublish" />
+                            <input type="hidden" name="id" value={s.id} />
+                            <input type="hidden" name="tab" value={tab} />
+                            <button type="submit" class="btn-outline">{a.unpublish}</button>
+                          </form>
+                        )}
+                        {tab === 'rejected' && (
+                          <form method="post" action="/admin/action">
+                            <input type="hidden" name="action" value="restore" />
+                            <input type="hidden" name="id" value={s.id} />
+                            <input type="hidden" name="tab" value={tab} />
+                            <button type="submit" class="btn-approve">{a.restore}</button>
+                          </form>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </>
+              )}
+            </li>
+          ))}
+        </ul>
       )}
 
-      <p class="footnote footnote-left">{config.publicArchive ? a.archiveOn : a.archiveOff} {a.sessionNote}</p>
+      <p class="panel-foot">{config.publicArchive ? a.archiveOn : a.archiveOff} {a.sessionNote} <a href="/admin/passphrase">{a.changePassphrase}</a></p>
     </>
   )}
 </Base>

@@ -1,46 +1,42 @@
 ---
 import Base from '../layouts/Base.astro';
-import { copy } from '../copy';
-import { config } from '../lib/config';
-
-// A validation hint may come back from /submit as ?e=empty or ?e=long.
-// Nothing the visitor wrote is ever part of a URL or echoed here.
-const e = Astro.url.searchParams.get('e');
-
-// The hidden "x9f3a" field below is the honeypot. Hidden from people; simple bots
-// fill every field. Its name is deliberately meaningless so browser autofill
-// (which guesses from names like "website", "email", "name") never touches it:
-// if it did, real stories would be dropped as spam. The name is checked in submit.ts.
-// This explanation lives here, in the frontmatter, so it is not sent to browsers.
+import { copy } from '../content/copy';
+import { home } from '../content/pages';
+import { ARROW_ICON } from '../lib/shell';
 ---
-<Base>
-  <h1>{copy.home.greeting}</h1>
-  {copy.home.intro.map((p) => <p class="lead">{p}</p>)}
-  <ul class="trust">
-    {copy.home.trust.map((line) => <li>{line}</li>)}
-  </ul>
+<Base title={copy.siteName} current="/">
+  <h1 class="sr-only">{copy.siteName}</h1>
+  <div class="home">
+    <section class="home-vignettes" aria-label="Opening">
+      {home.vignettes.map((v) => <p class="vignette">{v}</p>)}
+    </section>
 
-  <form class="write-form" method="post" action="/submit" data-replace-submit autocomplete="off" novalidate>
-    <label for="story" class="sr-only">{copy.home.textareaLabel}</label>
-    <textarea
-      id="story"
-      name="story"
-      maxlength={config.maxLength}
-      placeholder={copy.home.placeholder}
-      autocomplete="off"
-      spellcheck="false"
-      aria-describedby="story-note"
-    ></textarea>
-    <p class="field-note" id="story-note" role="status" data-error-empty hidden={!(e === 'empty')}>{copy.home.errors.empty}</p>
-    {e === 'long' && <p class="field-note" role="status">{copy.home.errors.long}</p>}
+    <section class="home-welcome" aria-label="Welcome">
+      {home.welcome.map((p) => <p class="body">{p}</p>)}
+    </section>
 
-    <div class="hp" aria-hidden="true">
-      <label for="x9f3a">{copy.home.honeypotLabel}</label>
-      <input type="text" id="x9f3a" name="x9f3a" tabindex="-1" autocomplete="off" autocapitalize="off" spellcheck="false" data-lpignore="true" data-1p-ignore="true" data-bwignore="true" />
-    </div>
+    <!-- The same block is a paper card on phones (after the vignettes) and a full-width band on desktop (after the welcome). -->
+    <section class="home-tea shape s-tint" aria-labelledby="tea-heading">
+      <div class="band shape s-disc-right">
+        <h2 id="tea-heading">{home.teaTalks.heading}</h2>
+        {home.teaTalks.body.map((p) => <p class="body">{p}</p>)}
+        <div class="actions">
+          <a class="btn-primary" href="/tea-talks">{home.teaTalks.share}</a>
+          <a class="btn-secondary" href="/stories">{home.teaTalks.read}</a>
+        </div>
+      </div>
+    </section>
 
-    <button type="submit" class="btn-primary">{copy.home.submit}</button>
-    <p class="field-note field-note-alert" role="alert" data-error-network hidden>{copy.home.errors.network}</p>
-    <p class="footnote">{copy.quickExit.hint}</p>
-  </form>
+    <section class="home-held shape s-ring-side" aria-label="A welcome">
+      <p class="held">{home.held}</p>
+    </section>
+
+    <nav class="home-doors shape s-ring" aria-label="More">
+      <ul class="doors">
+        {home.doors.map((d) => (
+          <li><a href={d.href}><span>{d.label}</span><Fragment set:html={ARROW_ICON} /></a></li>
+        ))}
+      </ul>
+    </nav>
+  </div>
 </Base>

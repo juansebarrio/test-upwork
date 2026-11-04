@@ -1,0 +1,480 @@
+/* Shai Collective. One stylesheet for every screen, error pages included.
+   Tokens from the approved visual pass: cream page, paper cards and bands,
+   ink text, terracotta for the single primary action, amber only for the
+   quick-exit outline, focus rings and small labels. Albert Sans only.
+   No images anywhere: the shapes are drawn here with pseudo-elements. */
+
+@font-face {
+  font-family: 'Albert Sans';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/fonts/albert-sans-latin-wght-normal.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Albert Sans';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/fonts/albert-sans-latin-ext-wght-normal.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+:root {
+  --cream: #f4ecdf;
+  --paper: #fcf8f1;
+  --ink: #3a2a20;
+  --terracotta: #a9502b;
+  --amber: #8f5a0c;
+  --ink-70: rgba(58, 42, 32, 0.7);
+  --hairline: rgba(58, 42, 32, 0.16);
+  --tint: rgba(169, 80, 43, 0.12);
+  --ease: 200ms ease;
+  color-scheme: light;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  background: var(--cream);
+  color: var(--ink);
+  font-family: 'Albert Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-text-size-adjust: 100%;
+}
+body {
+  margin: 0;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden; /* shapes may be cut by the viewport edge */
+}
+p { margin: 0; max-width: 70ch; }
+h1, h2, h3 { margin: 0; max-width: 70ch; text-wrap: pretty; }
+a { color: inherit; }
+
+/* Focus: 2 px amber, 2 px offset, on everything focusable. */
+:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
+:focus:not(:focus-visible) { outline: none; }
+
+/* Skip link */
+.skip-link {
+  position: absolute;
+  left: 16px;
+  top: -48px;
+  z-index: 30;
+  padding: 10px 14px;
+  background: var(--paper);
+  color: var(--ink);
+  border-radius: 10px;
+  text-decoration: none;
+  font-weight: 500;
+}
+.skip-link:focus { top: 12px; }
+
+/* Header: brand, navigation, language slot and the quick-exit pill. */
+.site-header { flex: none; padding: 0 24px; }
+.site-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 64px;
+}
+.site-header-end { display: flex; align-items: center; gap: 12px; }
+.brand {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--ink);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
+.site-nav { display: flex; flex-wrap: wrap; gap: 0 20px; margin: 0 0 4px; }
+.site-nav a, .lang a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--ink);
+  text-decoration: none;
+  transition: color var(--ease);
+}
+.site-nav a:hover, .site-nav a[aria-current='page'] { color: var(--terracotta); }
+.lang { display: flex; gap: 12px; }
+
+/* Quick exit: findable in half a second, calm rather than alarming. */
+.quick-exit {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 44px;
+  padding: 0 14px 0 12px;
+  border-radius: 999px;
+  border: 1.5px solid var(--amber);
+  background: var(--cream);
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background-color var(--ease), color var(--ease);
+}
+.quick-exit:hover { background: var(--paper); }
+.quick-exit svg { flex: none; }
+
+/* DEMO_MODE only: a calm one-line notice under the header on every page. */
+.demo-banner {
+  flex: none;
+  max-width: none;
+  margin: 4px -24px 0;
+  padding: 8px 24px;
+  background: var(--paper);
+  border-top: 1px solid var(--hairline);
+  border-bottom: 1px solid var(--hairline);
+  color: var(--ink-70);
+  font-size: 14px;
+  line-height: 1.5;
+  text-align: center;
+  text-wrap: pretty;
+}
+
+/* Main column: 640 wide for reading pages, 760 for the stories list and the panel. */
+.page {
+  flex: 1;
+  width: 100%;
+  max-width: 688px; /* 640 + 2 x 24 padding */
+  margin: 0 auto;
+  padding: 8px 24px 48px;
+  display: flex;
+  flex-direction: column;
+}
+.page:focus { outline: none; }
+.page-wide { max-width: 808px; }
+
+/* Type scale */
+.opener, .vignette {
+  font-size: 24px;
+  line-height: 1.4;
+  font-weight: 400;
+  max-width: 70ch;
+}
+.held {
+  font-size: 30px;
+  line-height: 1.2;
+  font-weight: 600;
+  color: var(--terracotta);
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+h1.title { font-size: 24px; line-height: 1.3; font-weight: 600; }
+h2 { font-size: 24px; line-height: 1.3; font-weight: 600; }
+.label { font-size: 13px; font-weight: 500; letter-spacing: 0.04em; color: var(--amber); text-transform: none; }
+.body, .section p:not(.opener), .lead { font-size: 16px; line-height: 1.6; }
+.helper { font-size: 14px; line-height: 1.5; color: var(--ink-70); }
+.alert { font-size: 14px; line-height: 1.5; color: var(--terracotta); }
+.stack > * + * { margin-top: 16px; }
+.section { margin-top: 40px; }
+.section > h2 + p, .section > h2 + .stack { margin-top: 12px; }
+.section .stack > * + * { margin-top: 14px; }
+.opening { margin-top: 24px; }
+.opening > * + * { margin-top: 20px; }
+
+/* Rows with a hairline between them, no bullets (About, Mental Health). */
+.rows { list-style: none; margin: 12px 0 0; padding: 0; }
+.rows li { padding: 14px 0; border-bottom: 1px solid var(--hairline); font-size: 16px; }
+.rows li:first-child { border-top: 1px solid var(--hairline); }
+
+/* Door rows: a label and the arrow, 44 px tall. */
+.doors { list-style: none; margin: 24px 0 0; padding: 0; }
+.doors li { border-bottom: 1px solid var(--hairline); }
+.doors li:first-child { border-top: 1px solid var(--hairline); }
+.doors a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 56px;
+  padding: 6px 0;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color var(--ease);
+}
+.doors a:hover { color: var(--terracotta); }
+.doors svg { flex: none; }
+
+/* Door cards (Our Work) */
+.cards-doors { list-style: none; margin: 24px 0 0; padding: 0; display: grid; gap: 12px; }
+.cards-doors li { background: var(--paper); border-radius: 16px; padding: 20px; }
+.cards-doors h3 { font-size: 18px; font-weight: 600; margin: 0 0 6px; }
+.cards-doors p { font-size: 16px; }
+
+/* Paper band / card (Home Tea Talks block, Tea Talks promise) */
+.band {
+  background: var(--paper);
+  border-radius: 16px;
+  padding: 24px 20px;
+  position: relative;
+}
+.band > * + * { margin-top: 14px; }
+.band h2 + p { margin-top: 12px; }
+.actions { display: flex; flex-direction: column; gap: 12px; margin-top: 20px; }
+
+/* Buttons */
+.btn-primary, .btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 56px;
+  padding: 0 28px;
+  border-radius: 12px;
+  font: inherit;
+  font-size: 17px;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color var(--ease), color var(--ease), border-color var(--ease);
+}
+.btn-primary { background: var(--terracotta); color: var(--paper); border: 1.5px solid var(--terracotta); }
+.btn-primary:hover { background: var(--ink); border-color: var(--ink); }
+.btn-secondary { background: transparent; color: var(--ink); border: 1.5px solid var(--ink); }
+.btn-secondary:hover { background: var(--paper); }
+.btn-primary:disabled { cursor: default; }
+
+/* Links in prose and return links */
+.link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--terracotta);
+  font-weight: 500;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+  transition: color var(--ease);
+}
+.link:hover { color: var(--ink); }
+.return { margin-top: 28px; }
+
+/* Forms */
+label { display: block; font-size: 14px; font-weight: 500; color: var(--ink); margin: 24px 0 8px; }
+textarea, input[type='text'], input[type='password'] {
+  width: 100%;
+  background: var(--paper);
+  border: 1px solid var(--hairline);
+  border-radius: 12px;
+  padding: 14px 16px;
+  font: inherit;
+  font-size: 17px;
+  line-height: 1.6;
+  color: var(--ink);
+  transition: border-color var(--ease);
+}
+textarea { min-height: 200px; resize: vertical; }
+textarea::placeholder { color: var(--ink-70); opacity: 1; }
+textarea:focus, input:focus { border-color: var(--amber); }
+.field-note { margin-top: 10px; font-size: 14px; line-height: 1.5; color: var(--ink-70); }
+.field-note-alert { color: var(--terracotta); }
+.reminder { margin: 20px 0 16px; font-size: 16px; }
+.write-form { display: flex; flex-direction: column; flex: 1; }
+.write-form textarea { flex: 1; min-height: 220px; }
+.write-form .btn-primary { margin-top: 16px; }
+[hidden] { display: none !important; }
+.footnote { margin-top: 16px; font-size: 14px; line-height: 1.5; color: var(--ink-70); text-align: center; text-wrap: pretty; }
+.rule { border: 0; border-top: 1px solid var(--hairline); margin: 32px 0 0; }
+
+/* Confirmation and 404 */
+.centered { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 24px 0 96px; }
+.centered h1 { font-size: 30px; line-height: 1.2; font-weight: 600; letter-spacing: -0.01em; }
+.centered h1 + p { margin-top: 14px; }
+
+/* Public stories: single column, hairlines between, month and year only. */
+.story-list { list-style: none; margin: 8px 0 0; padding: 0; }
+.story-item { padding: 28px 0; border-bottom: 1px solid var(--hairline); }
+.story-item:last-child { border-bottom: 0; }
+.story-text { font-size: 16px; line-height: 1.7; white-space: pre-wrap; overflow-wrap: anywhere; max-width: 70ch; }
+.story-when { margin-top: 12px; font-size: 13px; font-weight: 500; letter-spacing: 0.04em; color: var(--amber); }
+.lang-note { margin-top: 16px; font-size: 14px; color: var(--ink-70); }
+.lang-note a { color: var(--terracotta); text-underline-offset: 3px; }
+.empty-line { margin-top: 28px; color: var(--ink-70); }
+.pager { display: flex; justify-content: space-between; gap: 16px; margin-top: 8px; }
+.pager .ghost:last-child { margin-left: auto; }
+
+/* Ghost text controls: underlined, 44 px tap height. */
+.ghost, .ghost-btn {
+  display: inline-flex;
+  align-items: center;
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  font-size: 15px;
+  color: var(--ink-70);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+  min-height: 44px;
+  transition: color var(--ease);
+}
+.ghost:hover, .ghost-btn:hover { color: var(--ink); }
+.ghost-btn { padding: 0 10px; }
+
+/* Shapes. Flat fills, drawn here, never behind body text; at most two per screen. */
+.shape { position: relative; }
+.shape::before, .shape::after { content: ''; position: absolute; pointer-events: none; z-index: 0; border-radius: 50%; }
+.shape > * { position: relative; z-index: 1; }
+/* Positions are measured from the viewport edge (50% - 50vw = the page's left edge),
+   so a shape sits in the margin or is cut by the edge and never behind body text. */
+/* paper disc on cream, partly cut by the viewport edge */
+.s-disc-right::before { background: var(--paper); width: 240px; height: 240px; right: calc(50% - 50vw - 170px); top: -40px; }
+.s-disc-left::before { background: var(--paper); width: 200px; height: 200px; left: calc(50% - 50vw - 160px); top: -24px; }
+/* terracotta disc at 12% */
+.s-tint::before { background: var(--tint); width: 120px; height: 120px; left: -36px; top: -36px; }
+/* hairline ring */
+.s-ring::after { width: 60px; height: 60px; border: 1.5px solid var(--terracotta); right: -8px; top: -8px; }
+.s-ring-after::after { width: 60px; height: 60px; border: 1.5px solid var(--terracotta); right: -30px; bottom: -44px; top: auto; }
+.s-ring-side::after { width: 60px; height: 60px; border: 1.5px solid var(--terracotta); right: -36px; top: -52px; }
+
+/* Home: vignettes, then the Tea Talks block (card on phones, band on desktop), welcome, held line, doors. */
+.home { display: flex; flex-direction: column; }
+.home-vignettes { order: 0; margin-top: 16px; }
+.home-vignettes > * + * { margin-top: 20px; }
+.home-tea { order: 1; margin-top: 32px; }
+.home-welcome { order: 2; margin-top: 36px; }
+.home-welcome > * + * { margin-top: 14px; }
+.home-held { order: 3; margin-top: 40px; }
+.home-doors { order: 4; margin-top: 8px; }
+.home-tea .band::before { display: none; }
+
+/* Home shapes: phone = tint disc behind the Tea Talks card + ring near the door rows;
+   desktop = paper disc inside the band + ring beside the held line. Never more than two. */
+.home-held::after { display: none; }
+@media (min-width: 1024px) {
+  .home-tea::before { display: none; }
+  .home-doors::after { display: none; }
+  .home-held::after { display: block; }
+}
+
+/* Moderation panel */
+.login { flex: 1; display: flex; flex-direction: column; justify-content: center; padding-bottom: 96px; }
+.login h1 { font-size: 30px; line-height: 1.2; font-weight: 600; }
+.login .lead { margin-top: 12px; }
+.login .btn-primary { margin-top: 16px; }
+.login .field-note { margin-top: 16px; }
+.chip { margin-left: 8px; font-size: 12px; font-weight: 500; color: var(--ink-70); border: 1px solid var(--hairline); border-radius: 999px; padding: 2px 8px; line-height: 1.4; }
+.tabs { display: flex; flex-wrap: wrap; align-items: center; gap: 0 18px; border-bottom: 1px solid var(--hairline); font-size: 15px; margin-top: 8px; }
+.tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 0 10px;
+  margin-bottom: -1px;
+  border-bottom: 2px solid transparent;
+  color: var(--ink-70);
+  text-decoration: none;
+  min-height: 44px;
+  transition: color var(--ease);
+}
+.tab:hover { color: var(--ink); }
+.tab-active { color: var(--ink); font-weight: 500; border-bottom-color: var(--terracotta); }
+.count { font-size: 12px; font-weight: 500; line-height: 1.4; color: var(--paper); background: var(--terracotta); border-radius: 999px; padding: 1px 7px; }
+.tabs-end { margin-left: auto; }
+.tabs form { margin: 0; }
+.cards { list-style: none; margin: 16px 0 0; padding: 0; display: grid; gap: 12px; }
+.card { background: var(--paper); border-radius: 14px; padding: 18px 18px 14px; display: grid; gap: 14px; }
+.card-text { font-size: 15px; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; max-width: none; }
+.card-row { display: grid; gap: 14px; }
+.card-meta { font-size: 13px; color: var(--ink-70); }
+.card-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.card-actions form { margin: 0; }
+.btn-approve, .btn-outline {
+  display: inline-flex;
+  align-items: center;
+  height: 44px;
+  padding: 0 18px;
+  border-radius: 10px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color var(--ease), color var(--ease);
+}
+.btn-approve { background: var(--terracotta); color: var(--paper); border: 1.5px solid var(--terracotta); }
+.btn-approve:hover { background: var(--ink); border-color: var(--ink); }
+.btn-outline { background: transparent; color: var(--terracotta); border: 1.5px solid var(--terracotta); }
+.btn-outline:hover { background: var(--terracotta); color: var(--paper); }
+.confirm { border-top: 1px solid var(--hairline); padding-top: 14px; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; font-size: 14px; }
+.confirm form { margin: 0; }
+.confirm-text { flex: 1 1 100%; }
+.edit-form label { margin-top: 0; }
+.edit-form textarea { min-height: 160px; font-size: 15px; }
+.edit-form .card-actions { margin-top: 10px; }
+.empty { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 48px 0 120px; }
+.empty .lead { margin-top: 8px; font-size: 15px; color: var(--ink-70); }
+.panel-foot { margin-top: 28px; font-size: 14px; color: var(--ink-70); }
+.panel-foot a { color: var(--terracotta); }
+
+/* Honeypot: visually removed, unreachable by keyboard, invisible to screen readers. */
+.hp { position: absolute !important; left: -10000px !important; top: auto !important; width: 1px !important; height: 1px !important; overflow: hidden !important; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* Footer: brand, the five links, Safety and Privacy, nothing else. */
+.site-footer {
+  flex: none;
+  margin-top: 24px;
+  padding: 24px 24px 32px;
+  border-top: 1px solid var(--hairline);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 14px;
+}
+.site-footer nav { display: flex; flex-wrap: wrap; gap: 0 18px; }
+.site-footer a { display: inline-flex; align-items: center; min-height: 44px; color: var(--ink-70); text-decoration: none; transition: color var(--ease); }
+.site-footer a:hover { color: var(--ink); }
+.site-footer .brand { min-height: 0; }
+
+/* Desktop from 1024. */
+@media (min-width: 1024px) {
+  html { font-size: 17px; }
+  .site-header { padding: 0 40px; }
+  .site-header-row { min-height: 80px; }
+  .site-nav { gap: 0 28px; margin: 0 0 8px; }
+  .demo-banner { margin: 4px -40px 0; }
+  .page { padding-top: 32px; }
+  .opener, .vignette { font-size: 30px; }
+  .held { font-size: 40px; }
+  .body, .section p:not(.opener), .lead, .rows li, .cards-doors p { font-size: 17px; }
+  .btn-primary, .btn-secondary { width: auto; height: 60px; }
+  .actions { flex-direction: row; align-items: center; gap: 16px; }
+  .cards-doors { grid-template-columns: 1fr 1fr; gap: 16px; }
+  .card-row { display: flex; align-items: center; justify-content: space-between; }
+  .card { padding: 22px 24px 16px; }
+  .card-text { font-size: 16px; line-height: 1.65; }
+  .site-footer { flex-direction: row; align-items: center; justify-content: space-between; padding: 24px 40px 40px; }
+  /* shapes at full size */
+  .s-disc-right::before { width: 400px; height: 400px; right: calc(50% - 50vw - 220px); top: -60px; }
+  .s-disc-left::before { width: 360px; height: 360px; left: calc(50% - 50vw - 180px); top: 0; }
+  .s-tint::before { width: 200px; height: 200px; }
+  .s-ring::after, .s-ring-after::after, .s-ring-side::after { width: 120px; height: 120px; }
+  .s-ring::after { right: -160px; top: -20px; }
+  .s-ring-after::after { right: -180px; bottom: 0; }
+  .s-ring-side::after { right: -180px; top: 50%; transform: translateY(-50%); }
+  /* Home, variant B: the Tea Talks block becomes a full-width paper band after the welcome. */
+  .home-tea { order: 2; margin-top: 40px; width: 100vw; margin-left: calc(50% - 50vw); padding: 48px 0; background: var(--paper); overflow: hidden; }
+  .home-tea .band { width: 100%; max-width: 640px; margin: 0 auto; padding: 0; background: transparent; border-radius: 0; }
+  /* on the paper band the disc is cream, otherwise it would not show */
+  .home-tea .band::before { display: block; background: var(--cream); right: calc(50% - 50vw - 120px); top: -80px; }
+  .home-welcome { order: 1; margin-top: 40px; }
+  .home-held { margin-top: 48px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; }
+}

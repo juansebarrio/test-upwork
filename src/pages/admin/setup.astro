@@ -1,0 +1,50 @@
+---
+/**
+ * One-time setup link: /admin/setup?token=... printed by scripts/setup-link.mjs.
+ * Shows a form to choose the passphrase; saving stores a scrypt hash and deletes
+ * the token, so the link cannot be reused. Without a valid token: a plain 404.
+ */
+import Base from '../../layouts/Base.astro';
+import { copy } from '../../content/copy';
+import { config } from '../../lib/config';
+import { consumeSetupToken, setPassphrase, setupTokenValid } from '../../lib/auth';
+import { getStore } from '../../lib/store';
+
+const a = copy.admin.setup;
+const store = await getStore();
+const method = Astro.request.method;
+let token = Astro.url.searchParams.get('token') ?? '';
+let error: string | null = null;
+
+if (method === 'POST') {
+  const form = await Astro.request.formData();
+  token = String(form.get('token') ?? '');
+  if (!setupTokenValid(store, token)) return new Response(null, { status: 404 });
+  const p1 = String(form.get('passphrase') ?? '');
+  const p2 = String(form.get('repeat') ?? '');
+  if (p1.length < config.minPassphrase) error = a.tooShort;
+  else if (p1 !== p2) error = a.mismatch;
+  else {
+    setPassphrase(store, p1);
+    consumeSetupToken(store);
+    return Astro.redirect('/admin?note=set', 303);
+  }
+} else if (!setupTokenValid(store, token)) {
+  return new Response(null, { status: 404 });
+}
+---
+<Base title={copy.admin.title} noindex>
+  <section class="login">
+    <h1>{a.heading}</h1>
+    <p class="lead">{a.intro}</p>
+    <form method="post" action="/admin/setup" autocomplete="off">
+      <input type="hidden" name="token" value={token} />
+      <label for="passphrase">{a.newLabel}</label>
+      <input type="password" id="passphrase" name="passphrase" required minlength={config.minPassphrase} autocomplete="new-password" />
+      <label for="repeat">{a.repeatLabel}</label>
+      <input type="password" id="repeat" name="repeat" required minlength={config.minPassphrase} autocomplete="new-password" />
+      <button type="submit" class="btn-primary">{a.button}</button>
+      {error && <p class="field-note field-note-alert" role="alert">{error}</p>}
+    </form>
+  </section>
+</Base>

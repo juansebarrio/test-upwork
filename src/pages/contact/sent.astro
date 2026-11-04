@@ -1,0 +1,12 @@
+---
+import Base from '../../layouts/Base.astro';
+import { copy } from '../../content/copy';
+import { contact } from '../../content/pages';
+// This page has no access to what was sent.
+---
+<Base title={copy.titles.contact} noindex>
+  <section class="centered" aria-live="polite">
+    <h1 id="confirmation" tabindex="-1" data-focus-on-load>{contact.sent.body}</h1>
+    <p class="return"><a class="link" href="/">{contact.sent.back}</a></p>
+  </section>
+</Base>

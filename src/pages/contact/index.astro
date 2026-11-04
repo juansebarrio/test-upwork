@@ -1,0 +1,63 @@
+---
+/**
+ * The contact form. A POST stores the text, the optional way to reply and the
+ * day, nothing else, then redirects to /contact/sent, which never shows the message.
+ */
+import Base from '../../layouts/Base.astro';
+import { copy } from '../../content/copy';
+import { contact } from '../../content/pages';
+import { config } from '../../lib/config';
+import { getStore } from '../../lib/store';
+
+if (Astro.request.method === 'POST') {
+  const form = await Astro.request.formData();
+  // Honeypot filled in: almost certainly a bot. Pretend it worked, store nothing.
+  const honeypot = form.get('x9f3a');
+  if (typeof honeypot === 'string' && honeypot.trim() !== '') return Astro.redirect('/contact/sent', 303);
+
+  const raw = form.get('message');
+  const text = typeof raw === 'string' ? raw.replace(/\r\n?/g, '\n').trim() : '';
+  const rawReply = form.get('reply');
+  const reply = typeof rawReply === 'string' ? rawReply.trim().slice(0, config.maxReplyLength) : '';
+  if (text.length === 0) return Astro.redirect('/contact?e=empty', 303);
+  if (text.length > config.maxLength) return Astro.redirect('/contact?e=long', 303);
+
+  (await getStore()).insertMessage(text, reply === '' ? null : reply);
+  return Astro.redirect('/contact/sent', 303);
+}
+
+const e = Astro.url.searchParams.get('e');
+---
+<Base title={copy.titles.contact} current="/contact">
+  <h1 class="sr-only">{copy.titles.contact}</h1>
+  <section class="opening shape s-ring-side" aria-label="Introduction">
+    <p class="body">{contact.intro}</p>
+  </section>
+
+  <form method="post" action="/contact" autocomplete="off" novalidate>
+    <label for="message">{contact.messageLabel}</label>
+    <textarea id="message" name="message" maxlength={config.maxLength} autocomplete="off" spellcheck="false" aria-describedby="message-note"></textarea>
+    <p class="field-note" id="message-note" role="status" hidden={!(e === 'empty')}>{contact.errorEmpty}</p>
+    {e === 'long' && <p class="field-note" role="status">{contact.errorLong}</p>}
+
+    <label for="reply">{contact.replyLabel}</label>
+    <input type="text" id="reply" name="reply" maxlength={config.maxReplyLength} autocomplete="off" autocapitalize="off" spellcheck="false" aria-describedby="reply-help" />
+    <p class="field-note" id="reply-help">{contact.replyHelp}</p>
+
+    <div class="hp" aria-hidden="true">
+      <label for="x9f3a">{copy.teaTalks.honeypotLabel}</label>
+      <input type="text" id="x9f3a" name="x9f3a" tabindex="-1" autocomplete="off" autocapitalize="off" spellcheck="false" data-lpignore="true" data-1p-ignore="true" data-bwignore="true" />
+    </div>
+
+    <p class="reminder">{contact.reminder}</p>
+    <button type="submit" class="btn-primary">{contact.send}</button>
+  </form>
+
+  {config.contactEmail && (
+    <section class="section" aria-label="Email">
+      <hr class="rule" />
+      <p class="body">{contact.emailLead} <a class="link" href={`mailto:${config.contactEmail}`}>{config.contactEmail}</a></p>
+      <p class="helper">{contact.emailHelp}</p>
+    </section>
+  )}
+</Base>

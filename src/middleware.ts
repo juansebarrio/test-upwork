@@ -1,47 +1,32 @@
 /**
  * Runs on every server-rendered response.
  *  - Rejects cross-site form posts (CSRF).
- *  - Adds the security headers.
+ *  - Adds the security headers, and X-Robots-Tag on the Tea Talks routes.
  *  - Catches errors so nothing about the request reaches a log.
  *
  * There is deliberately no request logging anywhere in this app.
  */
 import { defineMiddleware } from 'astro:middleware';
-import { copy } from './copy';
-
+import { copy } from './content/copy';
 import { PAGE_HEADERS } from '../security-headers.mjs';
-import { config } from './lib/config';
+import { barePage } from './lib/shell';
+import { wantsNoindex } from './lib/robots';
 
 const HEADERS: Record<string, string> = { ...PAGE_HEADERS };
 
-function withHeaders(res: Response): Response {
+function withHeaders(res: Response, pathname: string): Response {
   let out = res;
   try {
-    for (const [k, v] of Object.entries(HEADERS)) out.headers.set(k, v);
+    out.headers.set('X-Content-Type-Options', 'nosniff');
   } catch {
     // Some Response objects have immutable headers; rebuild it.
     out = new Response(res.body, { status: res.status, statusText: res.statusText, headers: res.headers });
-    for (const [k, v] of Object.entries(HEADERS)) out.headers.set(k, v);
   }
+  for (const [k, v] of Object.entries(HEADERS)) out.headers.set(k, v);
+  if (wantsNoindex(pathname, out.status)) out.headers.set('X-Robots-Tag', 'noindex, nofollow');
+  else out.headers.delete('X-Robots-Tag');
   return out;
 }
-
-function escapeHtml(s: string): string {
-  return s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!);
-}
-
-function page(_title: string, heading: string, body: string): string {
-  // Bare page for the 500 and 403 cases, styled by /error.css. It still carries
-  // the quick exit (link + the same script), since it can appear on a public screen.
-  const icon = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>`;
-  const exit = `<a class="quick-exit" href="${escapeHtml(config.quickExitUrl)}" data-quick-exit aria-label="${escapeHtml(copy.quickExit.ariaLabel)}" rel="noreferrer noopener">${icon}<span>${escapeHtml(copy.quickExit.label)}</span></a>`;
-  const banner = config.demoMode ? `<p class="demo-banner">${escapeHtml(copy.demo.banner)}</p>` : '';
-  return `<!doctype html><html lang="${copy.lang}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="${escapeHtml(copy.siteDescription)}"><meta name="referrer" content="no-referrer"><meta name="robots" content="noindex, nofollow, noarchive"><title>${escapeHtml(copy.siteName)}</title><link rel="stylesheet" href="/error.css"></head><body>${exit}${banner}<main class="wrap"><h1>${escapeHtml(heading)}</h1><p>${escapeHtml(body)}</p><p><a href="/">${escapeHtml(copy.notFound.backHome)}</a></p></main><script src="/quick-exit.js" defer></script></body></html>`;
-}
-
-const errorPage = page(copy.error.title, copy.error.heading, copy.error.body);
-const crossSitePage = page(copy.crossSite.title, copy.crossSite.heading, copy.crossSite.body);
-
 
 const SAFE_METHODS = new Set(['GET', 'HEAD', 'OPTIONS']);
 
@@ -53,7 +38,7 @@ const SAFE_METHODS = new Set(['GET', 'HEAD', 'OPTIONS']);
  * Referrer-Policy: no-referrer, browsers send "Origin: null" on plain form
  * navigations, so a null or missing Origin cannot be checked and is let through;
  * the admin forms are still protected by the SameSite=Strict cookie, and the
- * public form by the honeypot.
+ * public forms by the honeypot.
  */
 function isCrossSite(request: Request): boolean {
   if (SAFE_METHODS.has(request.method)) return false;
@@ -70,16 +55,19 @@ function isCrossSite(request: Request): boolean {
   }
 }
 
+const html = { 'Content-Type': 'text/html; charset=utf-8' };
+
 export const onRequest = defineMiddleware(async (context, next) => {
+  const pathname = context.url.pathname;
   try {
     if (isCrossSite(context.request)) {
-      return withHeaders(new Response(crossSitePage, { status: 403, headers: { 'Content-Type': 'text/html; charset=utf-8' } }));
+      return withHeaders(new Response(barePage(copy.crossSite.heading, copy.crossSite.body, copy.notFound.back), { status: 403, headers: html }), pathname);
     }
-    return withHeaders(await next());
+    return withHeaders(await next(), pathname);
   } catch (err) {
     // Message and stack only. No URL, no headers, no body, no address.
     const e = err as Error;
     console.error('[tea-talks] error:', e?.stack ?? e?.message ?? String(err));
-    return withHeaders(new Response(errorPage, { status: 500, headers: { 'Content-Type': 'text/html; charset=utf-8' } }));
+    return withHeaders(new Response(barePage(copy.error.heading, copy.error.body, copy.notFound.back), { status: 500, headers: html }), pathname);
   }
 });
