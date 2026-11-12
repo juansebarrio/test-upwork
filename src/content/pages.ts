@@ -94,8 +94,8 @@ export const contact = {
   intro: 'If you want to reach us, the safest way is right here. What you write below reaches us and nothing else does: not your address, not your device, not where you are.',
   messageLabel: 'Your message',
   replyLabel: 'How can we reply to you? (optional)',
-  replyHelp: 'Deleted once we have replied.',
-  reminder: 'Please leave out names, places, or details that could identify you or others.',
+  replyHelp: 'If you leave this blank, we cannot reply. Deleted once we have replied.',
+  reminder: 'Your message comes directly to us. To protect yourself, please leave out real names, exact locations, or details that could identify you or others. If you would like us to reply, please leave a safe way to reach you above.',
   send: 'Send',
   /** Shown only when CONTACT_EMAIL is set. */
   emailLead: 'If you would rather write from your own email:',

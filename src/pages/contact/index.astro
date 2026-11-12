@@ -35,9 +35,10 @@ const e = Astro.url.searchParams.get('e');
   </section>
 
   <form method="post" action="/contact" autocomplete="off" novalidate>
+    <!-- Sent in the background by quick-exit.js and replaced by /contact/sent, so a message adds no history entry. Plain POST without JavaScript. -->
     <label for="message">{contact.messageLabel}</label>
     <textarea id="message" name="message" maxlength={config.maxLength} autocomplete="off" spellcheck="false" aria-describedby="message-note"></textarea>
-    <p class="field-note" id="message-note" role="status" hidden={!(e === 'empty')}>{contact.errorEmpty}</p>
+    <p class="field-note" id="message-note" role="status" data-error-empty hidden={!(e === 'empty')}>{contact.errorEmpty}</p>
     {e === 'long' && <p class="field-note" role="status">{contact.errorLong}</p>}
 
     <label for="reply">{contact.replyLabel}</label>
@@ -51,6 +52,7 @@ const e = Astro.url.searchParams.get('e');
 
     <p class="reminder">{contact.reminder}</p>
     <button type="submit" class="btn-primary">{contact.send}</button>
+    <p class="field-note field-note-alert" role="alert" data-error-network hidden>{copy.teaTalks.errors.network}</p>
   </form>
 
   {config.contactEmail && (

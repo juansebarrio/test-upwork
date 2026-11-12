@@ -28,10 +28,10 @@ function href(p: number): string {
   return '/stories' + (s ? `?${s}` : '');
 }
 ---
-<Base title={copy.titles.stories} noindex replaceLinks wide current="/tea-talks">
+<Base title={copy.titles.stories} noindex wide current="/tea-talks">
   <h1 class="title">{copy.stories.heading}</h1>
   <p class="body">{copy.stories.intro}</p>
-  {!all && <p class="lang-note">{copy.stories.langNote} <a href="/stories?all=1" data-replace>{copy.stories.showAll}</a></p>}
+  {!all && <p class="lang-note">{copy.stories.langNote} <a href="/stories?all=1">{copy.stories.showAll}</a></p>}
 
   {stories.length === 0 ? (
     <p class="empty-line">{copy.stories.empty}</p>
@@ -47,7 +47,7 @@ function href(p: number): string {
   )}
 
   <nav class="pager" aria-label={copy.stories.pagerLabel}>
-    {page > 1 && <a class="ghost" href={href(page - 1)} data-replace>{copy.stories.newer}</a>}
-    {page < pages && <a class="ghost" href={href(page + 1)} data-replace>{copy.stories.older}</a>}
+    {page > 1 && <a class="ghost" href={href(page - 1)}>{copy.stories.newer}</a>}
+    {page < pages && <a class="ghost" href={href(page + 1)}>{copy.stories.older}</a>}
   </nav>
 </Base>

@@ -80,16 +80,21 @@ dpkg -l | grep fail2ban                                       # empty
 
 On a phone and on a laptop:
 
-1. Open some unrelated site first (say, a news site). Then open the Tea Talks page.
-2. Type a few words in the box. Press **Leave quickly**.
-3. You land on the exit site. Press **Back**. You must land on the news site, **not** on this site.
-4. Open the Tea Talks page again, type, and this time press **Escape twice within a second**. Same result.
-   Also press Escape **once** and wait two seconds: nothing should happen and your text must still be there.
-5. Send a story, and from the thank-you page press **Leave quickly**. Press **Back**: news site again.
-6. On any other page (Home, About), the pill and the double Escape work the same way; only the exit itself replaces the history entry there.
-7. With JavaScript disabled, the pill is a plain link to the exit site.
+1. Open some unrelated site first (say, a news site). Then open the Home page.
+2. Walk through the site with its own links: About, Our Work, Tea Talks, Stories, Contact. Send a message. Go back to Home with "Back to the collective".
+3. Press **Leave quickly**. You land on the exit site. Press **Back**. You must land on the news site, **not** on any page of this site.
+4. Repeat the walk and this time press **Escape twice within a second**. Same result.
+   Also press Escape **once** and wait two seconds: nothing should happen and anything you typed must still be there.
+5. Repeat the walk, end on Tea Talks, send a story, and from the thank-you page press **Leave quickly**. Press **Back**: news site again.
+6. Hold Ctrl (or Cmd) and click a link: it opens in a new tab, as in any site; the current page stays.
+7. With JavaScript disabled, the pill is a plain link to the exit site and the forms post normally.
 
-Why this works: on the Tea Talks pages every internal move (form, links, quick exit) uses `location.replace`, which swaps the current history entry instead of adding a new one, so a whole visit occupies one slot and the exit overwrites it. Before leaving, the script also pauses any audio or video on the page.
+Why this works: on every page every internal move (links, forms, quick exit) uses `location.replace`, which swaps the current history entry instead of adding a new one, so a whole visit, however long, occupies one slot and the exit overwrites it. Before leaving, the script also pauses any audio or video on the page. `scripts/quick-exit-check.mjs` runs this walk and fails on any extra entry.
+
+Two limits, in plain words:
+
+- **With JavaScript off**, the button is a plain link and the pages are plain pages. The exit still works, but the Back button can return to the page that was open before it.
+- **A visit that started from a search results page returns there.** The site replaces only its own entries; the page the visitor came from (a search, a message, a bookmark list) is still the one Back goes to.
 
 Note: browsers still keep their own **history list** (the one under the menu) unless private mode is used. The quick exit protects the Back button, not that list. The Safety and Privacy page says so.
 

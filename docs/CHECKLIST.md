@@ -42,7 +42,7 @@ Wording to keep everywhere (adopted from the collective): *every request carries
 |---|---|---|---|
 | C1 | "Leave quickly" pill on every page, including panel, 404, 403, 500. | `curl` each error page and grep the pill; visual pass of every screen. | M2 |
 | C2 | Escape twice within one second exits; one Escape does nothing; holding the key does not count. | Manual in Chromium: type text, press Escape once (text stays), twice (exit). | M2 |
-| C3 | On exit: all fields cleared, tab title changed, `location.replace` to `QUICK_EXIT_URL`, a single history entry, Back does not return. | Chromium: `history.length` stays at 2 through the visit; Back from the exit site lands before Tea Talks. | M2 |
+| C3 | Every internal link replaces the previous page, so a visit of any length is one history entry; on exit that entry is replaced; Back lands before the site. With JavaScript off the button is a plain link. | `scripts/quick-exit-check.mjs`: a tab with two unrelated pages, then Home → About → Our Work → Tea Talks → Stories → Contact (send a message) → Home, pill: `history.length` equals the value before the site plus one, Back lands on the unrelated page; repeated with the double Escape and with a walk ending in a Tea Talks submission. | M2 |
 | C4 | Exit pauses every audio and video before leaving; players cannot pop out. | Play a sample, trigger exit, no sound continues; `disablepictureinpicture` present. | M2 script · W2 real media |
 | C5 | Works with JavaScript off: the pill is a plain link. | Disable JS, click the pill. | M2 |
 | C6 | `QUICK_EXIT_URL` is the neutral regional site the collective chose. | Env file on the server. | M2 (needs their choice) |
@@ -97,11 +97,12 @@ Wording to keep everywhere (adopted from the collective): *every request carries
 | H1 | Seven pages; header, switcher, pill and footer identical on every page. | Visual pass of every page at 390 and 1280. | M2 |
 | H2 | Copy verbatim to the master document; ledger lines L1–L30 kept as listed; D1–D3 reverted to the collective's wording. | Script: extract rendered text per page and diff against the master and the ledger. | M2 |
 | H3 | Design as approved in the visual pass: cream, paper, ink, terracotta, amber `#8F5A0C`; Albert Sans 400/500/600; type scale; held line only on Home; at most two shapes per screen, drawn in CSS. | Visual pass; grep CSS for any other colour value. | M2 |
-| H4 | Home: variant B on desktop, C on the phone. | Visual pass. | M2 |
+| H4 | Home: two-column opening on desktop with the Tea Talks card visible on the first laptop screen; door-first on the phone. | Playwright at 1280 × 660 and 1440 × 760: the "Share a story" box is fully inside the viewport on load; at 390 the order and shapes are unchanged; at most two shapes per screen. | M2 |
 | H5 | Safety and Privacy includes "What we cannot control" and "Two things that are public". | Read the live page. | M2 |
 | H6 | The code contains no country, city or location; those words exist only in the collective's content files. | `grep -rni "ethiopia\|addis\|horn of africa" src/ \| grep -v content/` is empty. | M2 |
 | H7 | No image files; the only icons are two inline Lucide SVGs. | `find public src -name "*.png" -o -name "*.jpg" -o -name "*.svg"` returns nothing. | M2 |
 | H8 | Tea Talks confirmation screen carries the collective's lines (ledger L13) and never the text sent. | Read; submit and check. | M2 (needs their lines) |
+| H9 | Confirmation screens: focus moves to the heading without a visible outline; one soft arc behind the text. | Chromium on `/thanks` and `/contact/sent`: the heading is the active element and its computed outline is none; exactly one drawn shape; axe clean; text contrast unchanged; the 404 page keeps its look. | M2 |
 
 ## I · Accessibility
 

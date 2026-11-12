@@ -75,6 +75,7 @@ If the request came through the Contact page, press **Replied** afterwards so th
 - Keep the passphrase in a password manager, not in a note or a message thread.
 - If the passphrase may have been seen by someone else, change it from the panel at once. Changing it signs nobody out, so also press Log out on any device you are unsure about.
 - Reply to contact messages from an account the collective controls, and press Replied right after.
+- On this site the Back button leaves the site rather than moving between its pages. That is by design: a whole visit, the panel included, occupies one entry in the browser's history, so nothing a visitor or a moderator opened can be walked back through. Use the site's own links and tabs to move around.
 
 ## What we can and cannot tell people
 

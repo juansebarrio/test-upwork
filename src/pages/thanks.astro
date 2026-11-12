@@ -4,9 +4,10 @@ import { copy } from '../content/copy';
 // This page deliberately has no access to what was submitted.
 // The heading receives focus on load (quick-exit.js), so a screen reader announces it.
 ---
-<Base title={copy.titles.teaTalks} noindex replaceLinks>
+<Base title={copy.titles.teaTalks} noindex>
   <section class="centered" aria-live="polite">
     <h1 id="confirmation" tabindex="-1" data-focus-on-load>{copy.thanks.heading}</h1>
-    <p class="return"><a class="link" href="/tea-talks" data-replace>{copy.thanks.again}</a></p>
+    <p class="return"><a class="link" href="/tea-talks">{copy.thanks.again}</a></p>
+    <div class="saucer shape" aria-hidden="true"></div>
   </section>
 </Base>

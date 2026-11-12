@@ -142,7 +142,7 @@ export const copy = {
     editNote: 'Saving replaces the text. The original is not kept anywhere.',
     replied: 'Replied',
     replyTo: 'Reply to',
-    noReplyTo: 'No reply address was given.',
+    noReplyTo: 'No reply details provided',
     confirmDeleteHeading: 'Delete this for good?',
     confirmDeleteYes: 'Yes, delete it',
     confirmDeleteNo: 'Keep it',

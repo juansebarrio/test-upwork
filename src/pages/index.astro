@@ -7,25 +7,29 @@ import { ARROW_ICON } from '../lib/shell';
 <Base title={copy.siteName} current="/">
   <h1 class="sr-only">{copy.siteName}</h1>
   <div class="home">
-    <section class="home-vignettes" aria-label="Opening">
-      {home.vignettes.map((v) => <p class="vignette">{v}</p>)}
-    </section>
+    <!-- The opening. On phones: vignettes, the Tea Talks paper card (with the tint disc), the welcome.
+         From 1024 px: two columns, vignettes and welcome on the left, the card sticky on the right
+         with the paper disc behind it. -->
+    <div class="home-top">
+      <section class="home-vignettes" aria-label="Opening">
+        {home.vignettes.map((v) => <p class="vignette">{v}</p>)}
+      </section>
 
-    <section class="home-welcome" aria-label="Welcome">
-      {home.welcome.map((p) => <p class="body">{p}</p>)}
-    </section>
+      <section class="home-welcome" aria-label="Welcome">
+        {home.welcome.map((p) => <p class="body">{p}</p>)}
+      </section>
 
-    <!-- The same block is a paper card on phones (after the vignettes) and a full-width band on desktop (after the welcome). -->
-    <section class="home-tea shape s-tint" aria-labelledby="tea-heading">
-      <div class="band shape s-disc-right">
-        <h2 id="tea-heading">{home.teaTalks.heading}</h2>
-        {home.teaTalks.body.map((p) => <p class="body">{p}</p>)}
-        <div class="actions">
-          <a class="btn-primary" href="/tea-talks">{home.teaTalks.share}</a>
-          <a class="btn-secondary" href="/stories">{home.teaTalks.read}</a>
+      <section class="home-tea shape s-tint" aria-labelledby="tea-heading">
+        <div class="band">
+          <h2 id="tea-heading">{home.teaTalks.heading}</h2>
+          {home.teaTalks.body.map((p) => <p class="body">{p}</p>)}
+          <div class="actions">
+            <a class="btn-primary" href="/tea-talks">{home.teaTalks.share}</a>
+            <a class="btn-secondary" href="/stories">{home.teaTalks.read}</a>
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </div>
 
     <section class="home-held shape s-ring-side" aria-label="A welcome">
       <p class="held">{home.held}</p>

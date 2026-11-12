@@ -111,9 +111,9 @@ Changing any of these is a restart, not a rebuild.
 - **CSRF**: `Sec-Fetch-Site` is the primary signal; `Origin` against `Host` is the fallback.
 - **Spam**: a honeypot field with a meaningless name on both forms. No rate limiting, because rate limiting needs to know who is asking.
 - **Deletion**: `DELETE FROM`, with `secure_delete=ON`, `journal_mode=DELETE`, `auto_vacuum=FULL`. Editing a story replaces its text; no copy of the original is kept.
-- **Quick exit**: one tap, or Escape twice within a second; pauses media, clears fields, `location.replace` to the exit site. On the Tea Talks pages every internal link also uses `replace`, so a visit is one history entry.
+- **Quick exit**: one tap, or Escape twice within a second; pauses media, clears fields, `location.replace` to the exit site. On every page every internal link and every form also uses `replace` (one handler in `public/quick-exit.js`), so a visit of any length is one history entry and Back from the exit site lands before the site. Ctrl/Cmd-click still opens a new tab.
 - **No images, no third parties**: the shapes are CSS, the two icons are inline SVG, the font is self-hosted.
-- **Copy**: every word the collective wrote lives in `src/content/` and `scripts/copy-check.mjs` fails if a page shows anything else.
+- **Copy**: every word the collective wrote lives in `src/content/` and `scripts/copy-check.mjs` fails if a page shows anything else. Collective-supplied in the second review round (no ledger file exists, so they are noted here): the Contact reminder "Your message comes directly to us. To protect yourself, please leave out real names, exact locations, or details that could identify you or others. If you would like us to reply, please leave a safe way to reach you above."; the reply helper "If you leave this blank, we cannot reply. Deleted once we have replied."; the panel line "No reply details provided".
 
 ## Documents
 

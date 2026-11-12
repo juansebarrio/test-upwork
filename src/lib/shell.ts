@@ -17,8 +17,6 @@ export const LOGOUT_ICON = '<svg width="16" height="16" viewBox="0 0 24 24" fill
 export const ARROW_ICON = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>';
 
 export interface ShellOptions {
-  /** Tea Talks pages: internal links navigate with location.replace (one history entry per visit). */
-  replaceLinks?: boolean;
   /** Which nav item is the current page, by href. */
   current?: string;
 }
@@ -28,9 +26,8 @@ export function quickExitHtml(): string {
 }
 
 export function headerHtml(opts: ShellOptions = {}): string {
-  const rep = opts.replaceLinks ? ' data-replace' : '';
   const nav = copy.nav
-    .map((n) => `<a href="${n.href}"${rep}${opts.current === n.href ? ' aria-current="page"' : ''}>${escapeHtml(n.label)}</a>`)
+    .map((n) => `<a href="${n.href}"${opts.current === n.href ? ' aria-current="page"' : ''}>${escapeHtml(n.label)}</a>`)
     .join('');
   // The language switcher slot renders only when more than one language is offered.
   const langs = config.languages.length > 1
@@ -40,7 +37,7 @@ export function headerHtml(opts: ShellOptions = {}): string {
     `<a class="skip-link" href="#main">${escapeHtml(copy.skipLink)}</a>`,
     `<header class="site-header">`,
     `<div class="site-header-row">`,
-    `<a class="brand" href="/"${rep}>${escapeHtml(copy.siteName)}</a>`,
+    `<a class="brand" href="/">${escapeHtml(copy.siteName)}</a>`,
     `<div class="site-header-end">${langs}${quickExitHtml()}</div>`,
     `</div>`,
     `<nav class="site-nav" aria-label="Site">${nav}</nav>`,
@@ -49,10 +46,9 @@ export function headerHtml(opts: ShellOptions = {}): string {
   ].join('');
 }
 
-export function footerHtml(opts: ShellOptions = {}): string {
-  const rep = opts.replaceLinks ? ' data-replace' : '';
+export function footerHtml(): string {
   const links = [...copy.nav, copy.footer.safety]
-    .map((n) => `<a href="${n.href}"${rep}>${escapeHtml(n.label)}</a>`)
+    .map((n) => `<a href="${n.href}">${escapeHtml(n.label)}</a>`)
     .join('');
   return `<footer class="site-footer"><span class="brand">${escapeHtml(copy.siteName)}</span><nav aria-label="Footer">${links}</nav></footer>`;
 }

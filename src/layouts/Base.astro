@@ -14,12 +14,10 @@ interface Props {
   noindex?: boolean;
   /** Use the wider 760px column (stories list, moderation panel). */
   wide?: boolean;
-  /** Tea Talks pages: internal links navigate with location.replace. */
-  replaceLinks?: boolean;
   /** href of the current nav item, if any. */
   current?: string;
 }
-const { title, noindex = false, wide = false, replaceLinks = false, current } = Astro.props;
+const { title, noindex = false, wide = false, current } = Astro.props;
 const fullTitle = title === copy.siteName ? title : `${title} · ${copy.siteName}`;
 ---
 <!doctype html>
@@ -34,11 +32,11 @@ const fullTitle = title === copy.siteName ? title : `${title} · ${copy.siteName
     <link rel="stylesheet" href="/site.css" />
   </head>
   <body>
-    <Fragment set:html={headerHtml({ replaceLinks, current })} />
+    <Fragment set:html={headerHtml({ current })} />
     <main id="main" class:list={['page', { 'page-wide': wide }]} tabindex="-1">
       <slot />
     </main>
-    <Fragment set:html={footerHtml({ replaceLinks })} />
+    <Fragment set:html={footerHtml()} />
     <script is:inline src="/quick-exit.js" defer></script>
   </body>
 </html>
