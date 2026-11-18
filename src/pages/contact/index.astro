@@ -34,8 +34,8 @@ const e = Astro.url.searchParams.get('e');
     <p class="body">{contact.intro}</p>
   </section>
 
-  <form method="post" action="/contact" autocomplete="off" novalidate>
-    <!-- Sent in the background by quick-exit.js and replaced by /contact/sent, so a message adds no history entry. Plain POST without JavaScript. -->
+  <!-- Sent in the background by quick-exit.js, then the router replaces the page with /contact/sent. Plain POST without JavaScript. -->
+  <form method="post" action="/contact" data-replace-submit autocomplete="off" novalidate>
     <label for="message">{contact.messageLabel}</label>
     <textarea id="message" name="message" maxlength={config.maxLength} autocomplete="off" spellcheck="false" aria-describedby="message-note"></textarea>
     <p class="field-note" id="message-note" role="status" data-error-empty hidden={!(e === 'empty')}>{contact.errorEmpty}</p>

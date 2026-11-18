@@ -4,7 +4,15 @@
  * slot, quick-exit pill), main column, footer. The header and footer markup
  * comes from src/lib/shell.ts so the middleware's bare error pages carry the
  * identical shell. No inline styles, no inline scripts (the CSP forbids them).
+ *
+ * The client router (Astro's ClientRouter, fallback "none", no animations) makes
+ * every internal link a same-document navigation: the browser keeps one history
+ * entry per page, Back and Forward work normally, and the quick exit can rewind
+ * the whole visit in one step (public/quick-exit.js). It adds two <meta> tags and
+ * one same-origin module script; nothing inline. Browsers without view-transition
+ * support get ordinary page loads instead.
  */
+import { ClientRouter } from 'astro:transitions';
 import { copy } from '../content/copy';
 import { footerHtml, headerHtml } from '../lib/shell';
 
@@ -30,6 +38,14 @@ const fullTitle = title === copy.siteName ? title : `${title} · ${copy.siteName
     {noindex && <meta name="robots" content="noindex, nofollow" />}
     <title>{fullTitle}</title>
     <link rel="stylesheet" href="/site.css" />
+    <ClientRouter fallback="none" />
+    <script>
+      // The one bridge between the router and public/quick-exit.js: after a story or a
+      // message is sent in the background, the page moves to its confirmation with the
+      // router (history 'replace'), so the document and its history index survive.
+      import { navigate } from 'astro:transitions/client';
+      (window as any).teaTalksNavigate = (url: string) => navigate(url, { history: 'replace' });
+    </script>
   </head>
   <body>
     <Fragment set:html={headerHtml({ current })} />

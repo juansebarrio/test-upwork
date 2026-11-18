@@ -75,7 +75,7 @@ If the request came through the Contact page, press **Replied** afterwards so th
 - Keep the passphrase in a password manager, not in a note or a message thread.
 - If the passphrase may have been seen by someone else, change it from the panel at once. Changing it signs nobody out, so also press Log out on any device you are unsure about.
 - Reply to contact messages from an account the collective controls, and press Replied right after.
-- On this site the Back button leaves the site rather than moving between its pages. That is by design: a whole visit, the panel included, occupies one entry in the browser's history, so nothing a visitor or a moderator opened can be walked back through. Use the site's own links and tabs to move around.
+- The Back button moves between the pages of the site, the panel included, as on any site. The **Leave quickly** button rewinds all of them at once and replaces them with Google's homepage, so after an exit nothing you opened can be walked back through. It cannot rewind pages opened before a reload, with scripts off it replaces only the current page, and in some browsers the Forward button can still reach the rewound pages until something else is opened.
 
 ## What we can and cannot tell people
 

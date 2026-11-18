@@ -44,7 +44,9 @@ If you ever want a story taken down, write to us through the Contact page with a
 
 ## The quick exit
 
-Every page has a calm **Leave quickly** button, and pressing the Escape key twice does the same thing (twice, so that one accidental press does not throw away what you were writing). It clears anything you have typed and replaces the page with Google's homepage, which looks like a new tab, in a way that the Back button will not bring you back here. Use it whenever you like. It is there for you, not for us.
+Every page has a calm **Leave quickly** button, and pressing the Escape key twice does the same thing (twice, so that one accidental press does not throw away what you were writing). It clears anything you have typed, rewinds the pages of this site you opened in this tab and replaces them with Google's homepage, which looks like a new tab, so the Back button will not bring you back here. Use it whenever you like. It is there for you, not for us.
+
+Three things it cannot do: if your browser has scripts turned off, it still leaves, but Back can return to the page you were on; if you arrived here from a search, Back goes to that search; and if you reloaded a page in the middle of your visit, the pages you opened before the reload stay in Back. One more, in some browsers: pressing Forward twice from Google's page can reach the pages you had opened, until you open anything else there. Your browser also keeps its own list of every page you visit; only private browsing avoids that.
 
 ## What we cannot control, said plainly
 

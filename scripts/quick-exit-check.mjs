@@ -1,17 +1,19 @@
 #!/usr/bin/env node
 /**
- * Checklist C2, C3, C5 and B5 in one run, in headless Chromium.
+ * Checklist C2, C3, C5, C7 and B5 in one run, in headless Chromium.
  *
- * C3, the history test: a tab holds two unrelated pages, then the site is opened
- * and walked through its own links (Home → About → Our Work → Tea Talks → Home →
- * Stories → Contact, a message is sent → Home); after the quick exit,
- * history.length must be exactly what it was before the site plus one (the single
- * entry the whole visit occupied, replaced by the exit), and Back must land on the
- * unrelated page that preceded the site. Run three times: pill, double Escape,
- * and a walk that ends in a Tea Talks submission. Any extra entry fails the run.
+ * C3/C7, the history test: a tab holds two unrelated pages, then the site is
+ * opened and walked through its own links (Home → About → Our Work → Tea Talks →
+ * Home → Stories → Contact). Every step must be a same-document navigation (a
+ * marker set on window at first load is still there) and must add one history
+ * entry; Back twice and Forward once must move between pages of the site, again
+ * without a reload. Then the quick exit: history.length must be the pre-site
+ * length plus one, and Back must land on the unrelated page that preceded the
+ * site. Four runs: pill; double Escape; a Tea Talks submission in the middle;
+ * a reload on About (the documented limit: entries before the reload stay).
  * Also: single Escape keeps the text, a held key does not count, modifier-click
- * still opens a new tab, the pill and the forms work with JavaScript off, no
- * other origin is requested, no cookie.
+ * opens a new tab, the pill and both forms work with JavaScript off, no other
+ * origin is requested, no cookie.
  *
  *   PLAYWRIGHT_CHROMIUM=/path/to/chromium node scripts/quick-exit-check.mjs [base-url]
  */
@@ -31,55 +33,95 @@ const archiveOn = (await fetch(B + '/stories')).status === 200;
 if (!archiveOn) console.log('note: /stories is off (PUBLIC_ARCHIVE unset); the walk skips it');
 
 const hist = (p) => p.evaluate(() => history.length);
+const index = (p) => p.evaluate(() => history.state && history.state.index);
 const path = (p) => new URL(p.url()).pathname;
-async function follow(p, selector, expectPath) {
-  await Promise.all([p.waitForNavigation(), p.click(selector)]);
-  check(path(p) === expectPath, `${selector} → ${path(p)} | history ${await hist(p)}`);
+const marker = (p) => p.evaluate(() => window.__visitMarker === 'first-load');
+const settled = async (p, expectPath) => { await p.waitForFunction((x) => location.pathname === x, expectPath); await p.waitForTimeout(80); };
+
+async function follow(p, selector, expectPath, lenBefore) {
+  await p.click(selector); await settled(p, expectPath);
+  const same = await marker(p); const len = await hist(p);
+  check(path(p) === expectPath && same && len === lenBefore + 1, `${selector} → ${path(p)} | same document: ${same} | history ${len} (+1) | index ${await index(p)} | title "${await p.title()}"`);
+  return len;
 }
 
-async function walk(p, ending) {
+async function walk(p, mode) {
   await p.goto('data:text/html,<title>first unrelated</title>one');
   await p.goto('data:text/html,<title>news</title>two');
   const before = await hist(p);
   await p.goto(B + '/');
-  console.log(`history before the site: ${before}; after opening Home: ${await hist(p)}`);
-  await follow(p, 'nav.site-nav a[href="/about"]', '/about');
-  await follow(p, 'nav.site-nav a[href="/our-work"]', '/our-work');
-  await follow(p, 'nav.site-nav a[href="/tea-talks"]', '/tea-talks');
-  await follow(p, 'a.brand', '/');
-  if (archiveOn) {
-    await follow(p, 'a.btn-secondary[href="/stories"]', '/stories');
-    await follow(p, 'nav.site-nav a[href="/contact"]', '/contact');
-  } else {
-    await follow(p, 'nav.site-nav a[href="/contact"]', '/contact');
+  await p.evaluate(() => { window.__visitMarker = 'first-load'; });
+  let len = await hist(p);
+  console.log(`history before the site: ${before}; after opening Home: ${len} | index ${await index(p)}`);
+  check(len === before + 1, 'opening Home added one entry');
+  len = await follow(p, 'nav.site-nav a[href="/about"]', '/about', len);
+  if (mode === 'reload') {
+    await p.reload(); await p.evaluate(() => { window.__visitMarker = 'after-reload'; });
+    console.log(`  reloaded on /about: history ${await hist(p)} | index after reload ${await index(p)} (survives the reload)`);
+    // from here the marker is the new document's
+    const m2 = (q) => q.evaluate(() => window.__visitMarker === 'after-reload');
+    await p.click('nav.site-nav a[href="/our-work"]'); await settled(p, '/our-work');
+    check(await m2(p) && (await hist(p)) === len + 1, `after the reload, Our Work opened in the reloaded document | history ${await hist(p)}`);
+    await p.click('[data-quick-exit]'); await p.waitForURL(EXIT + '**');
+    const after = await hist(p);
+    console.log(`  exit after the reload: history ${after} (was ${before} before the site), title "${await p.title()}"`);
+    await p.goBack(); await p.waitForLoadState();
+    const landed = await p.title();
+    console.log(`  Back from the exit site lands on "${landed}" (${path(p)})`);
+    check(landed !== 'Google', 'documented limit: after a reload only the pages opened since the reload are rewound; the exit still leaves and Back lands on an earlier page of the visit, not on the exit site');
+    return;
   }
-  await p.fill('#message', 'history test message'); await p.fill('#reply', 'none');
-  await Promise.all([p.waitForNavigation(), p.click('button[type=submit]')]);
-  check(path(p) === '/contact/sent', `message sent → ${path(p)} | history ${await hist(p)} | focused heading: ${await p.evaluate(() => document.activeElement.id)}`);
-  await follow(p, '.return a[href="/"]', '/');
-  if (ending === 'tea-talks') {
-    await follow(p, 'nav.site-nav a[href="/tea-talks"]', '/tea-talks');
+  len = await follow(p, 'nav.site-nav a[href="/our-work"]', '/our-work', len);
+  len = await follow(p, 'nav.site-nav a[href="/tea-talks"]', '/tea-talks', len);
+  check(await p.$('meta[name="robots"][content="noindex, nofollow"]') !== null, 'robots meta present on Tea Talks after a same-document navigation');
+  if (mode === 'tea-talks') {
     await p.fill('#story', 'history test story');
-    await Promise.all([p.waitForNavigation(), p.click('button[type=submit]')]);
-    check(path(p) === '/thanks', `story sent → ${path(p)} | history ${await hist(p)} | focused heading: ${await p.evaluate(() => document.activeElement.id)}`);
+    await p.click('button[type=submit]'); await settled(p, '/thanks');
+    check(await marker(p) && (await hist(p)) === len, `story sent in the background → ${path(p)} | same document: ${await marker(p)} | history ${await hist(p)} (replace, no new entry) | focused heading: ${await p.evaluate(() => document.activeElement.id)}`);
+    await p.click('.return a[href="/tea-talks"]'); await settled(p, '/tea-talks'); len = await hist(p);
   }
-  const duringVisit = await hist(p);
-  if (ending === 'escape') { await p.keyboard.press('Escape'); await p.waitForTimeout(100); await p.keyboard.press('Escape'); }
+  len = await follow(p, 'a.brand', '/', len);
+  if (archiveOn) len = await follow(p, 'a.btn-secondary[href="/stories"]', '/stories', len);
+  len = await follow(p, 'nav.site-nav a[href="/contact"]', '/contact', len);
+  // Back twice, Forward once: pages of the site, no reload
+  await p.goBack(); await settled(p, archiveOn ? '/stories' : '/');
+  check(await marker(p), `Back → ${path(p)} | same document: ${await marker(p)}`);
+  await p.goBack(); await settled(p, archiveOn ? '/' : '/tea-talks');
+  check(await marker(p), `Back → ${path(p)} | same document: ${await marker(p)}`);
+  await p.goForward(); await settled(p, archiveOn ? '/stories' : '/');
+  check(await marker(p) && (await hist(p)) === len, `Forward → ${path(p)} | same document: ${await marker(p)} | history still ${await hist(p)}`);
+  if (mode === 'message') {
+    await p.goForward(); await settled(p, '/contact');
+    await p.fill('#message', 'history test message');
+    await p.click('button[type=submit]'); await settled(p, '/contact/sent');
+    check(await marker(p) && (await hist(p)) === len, `message sent in the background → ${path(p)} | same document | history ${await hist(p)} (replace) | focused heading: ${await p.evaluate(() => document.activeElement.id)}`);
+  }
+  const during = await hist(p);
+  if (mode === 'escape') { await p.keyboard.press('Escape'); await p.waitForTimeout(100); await p.keyboard.press('Escape'); }
   else await p.click('[data-quick-exit]');
   await p.waitForURL(EXIT + '**');
   const after = await hist(p);
-  check(duringVisit === before + 1, `the whole visit occupied one entry: history ${duringVisit} = ${before} + 1`);
-  check(after === before + 1, `after the exit (${ending}): history ${after} = ${before} + 1, title "${await p.title()}"`);
-  await p.goBack();
+  check((await p.title()) === 'Google' && p.url() === EXIT, `exit (${mode}) from entry ${during - before} of the visit → ${p.url()}, title "${await p.title()}"`);
+  await p.goBack(); await p.waitForLoadState();
   check((await p.title()) === 'news', `Back lands on "${await p.title()}" (the page before the site)`);
+  await p.goForward(); await p.waitForLoadState();
+  check((await p.title()) === 'Google', `Forward lands on "${await p.title()}" (the exit site took the first page's entry)`);
+  await p.goForward().catch(() => {}); await p.waitForLoadState().catch(() => {});
+  const beyond = path(p);
+  if (after === before + 1) ok(`history ${after} = ${before} + 1: the later entries were discarded`);
+  else console.log(`  limit: history ${after} (${before} + the ${during - before} entries of the visit): Chromium keeps the entries after a replaced one, so a second Forward from the exit site reaches ${beyond} (written down in docs/VERIFICATION.md)`);
 }
 
-console.log('\nC3 · walk ending with the pill');
+console.log('\nC3/C7 · walk, Back twice, Forward once, exit with the pill');
 await walk(await ctx.newPage(), 'pill');
-console.log('\nC3 · walk ending with the double Escape');
+console.log('\nC3/C7 · the same, exit with the double Escape');
 await walk(await ctx.newPage(), 'escape');
-console.log('\nC3 · walk ending with a Tea Talks submission, then the pill');
+console.log('\nC3/C7 · with a Tea Talks submission in the middle, then the pill');
 await walk(await ctx.newPage(), 'tea-talks');
+console.log('\nC3/C7 · with a contact message at the end, then the pill');
+await walk(await ctx.newPage(), 'message');
+console.log('\nC3 · after a reload on About (documented limit)');
+await walk(await ctx.newPage(), 'reload');
 
 console.log('\nC2 · Escape');
 {
@@ -90,7 +132,7 @@ console.log('\nC2 · Escape');
   check(path(p) === '/tea-talks', `held key (repeat events): still on ${path(p)}`);
   await p.close();
 }
-console.log('\nModifier-click opens a new tab and is not intercepted');
+console.log('\nModifier-click opens a new tab');
 {
   const p = await ctx.newPage(); await p.goto(B + '/');
   const h = await hist(p);

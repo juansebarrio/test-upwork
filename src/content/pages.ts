@@ -11,7 +11,7 @@ export const home = {
     'It is meeting your first queer African at your first small gathering of LGBTQ+ people.',
   ],
   welcome: [
-    'Welcome to the Shai Collective. We all know what home means to us. We are just giving it a name. It is a group of LBQ women, trans women, and non-binary people in Ethiopia reaching across the Horn of Africa. In a world that often shuns us and denies our existence, we came together to hold space for each other.',
+    'Welcome to the Shai Collective. We all know what home means to us. We are just giving it a name. It is a group of LBQ women, trans women, and non-binary people in Ethiopia reaching across the Horn of Africa. In a world that often shuns us and denies our existence, we came together to hold space for each other and to find joy together.',
     'The Shai Collective is the community we all needed. It is the spiced tea of our ancestors, familiar, comforting, and nourishing.',
   ],
   teaTalks: {
@@ -57,9 +57,8 @@ export const ourWork = {
   opener: 'Our work is rooted in two things: healing and storytelling.',
   storiesHeading: 'Stories',
   stories: [
-    'There are almost no queer stories from the Horn of Africa. No literature, no films, limited number of podcasts. Our lives are erased from our own cultures, and that erasure is a kind of violence, slow and quiet, but real.',
-    'We are doing something about it. We are working on our first anthology of short stories and recording our pilot podcast episode. We create short stories, poetry, audio dramas, and podcasts. Some may be inspired by real experiences, others imagined, but all of them reflect the truth of what it means to be us.',
-    'We create because we need to see ourselves, because the next generation deserves to know that we existed, and because joy, imagination, and creativity are forms of survival.',
+    'There are almost no queer stories from the Horn of Africa. Little literature, few films, a handful of podcasts. Our lives are erased from our own cultures, and that erasure is a kind of violence, slow and quiet, but real.',
+    'We are doing something about it. We create short stories, magazines, poetry, audio dramas, and podcasts. Some may be inspired by real experiences, others imagined, but all of them reflect the truth of what it means to be us. Our stories hold grief, but they also hold joy, desire, and humor. We create because we need to see ourselves, because the next generation deserves to know that we existed, and because joy, imagination, and creativity are forms of survival. We capture everything in between queer joy and queer survival.',
   ],
   /** Four door cards. The publishing system behind them is a later milestone. */
   doors: [
@@ -83,7 +82,7 @@ export const safety = {
   neverHeading: 'What it never keeps',
   never: 'No addresses, no device details, no cookies, no accounts, no record of your visit. Nothing on this site loads from anywhere else, so no other company sees you here either.',
   leavingHeading: 'Leaving quickly',
-  leaving: 'Every page has a "Leave quickly" button at the top, and pressing Escape twice does the same. It clears what you were writing and replaces this page with an ordinary site, so pressing Back will not bring you here.',
+  leaving: 'Every page has a "Leave quickly" button at the top, and pressing Escape twice does the same. It clears what you were writing, rewinds the pages of this site you opened in this tab and replaces them with Google\'s homepage, so pressing Back will not bring you here. Two things it cannot do: if your browser has scripts turned off, it still leaves, but Back can return; and if you arrived here from a search, Back goes to that search. Your browser also keeps its own list of every page you visit; only private browsing avoids that.',
   controlHeading: 'What we cannot control',
   control: 'Your own phone or computer, which keeps its own history. Your internet provider, which can see that you visited this site, though not what you wrote. The company that hosts the site, which keeps its own network records that we cannot see or delete. And the words you choose to write, so please leave out anything that could identify you or someone else.',
   publicHeading: 'Two things that are public',

@@ -25,7 +25,7 @@ const t = copy.teaTalks;
     <p class="body">{t.below[0]}</p>
   </section>
 
-  <form class="write-form" method="post" action="/submit" autocomplete="off" novalidate>
+  <form class="write-form" method="post" action="/submit" data-replace-submit autocomplete="off" novalidate>
     <label for="story" class="sr-only">{t.textareaLabel}</label>
     <textarea id="story" name="story" maxlength={config.maxLength} placeholder={t.placeholder} autocomplete="off" spellcheck="false" aria-describedby="story-note"></textarea>
     <p class="field-note" id="story-note" role="status" data-error-empty hidden={!(e === 'empty')}>{t.errors.empty}</p>

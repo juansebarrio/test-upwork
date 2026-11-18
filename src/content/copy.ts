@@ -42,7 +42,7 @@ export const copy = {
     heading: 'Our Anonymous Space',
     intro: 'We host an anonymous space called Tea Talks, where community members can share their thoughts, feelings, and experiences.',
     promise: {
-      lead: 'Before you write, here is our promise to you:',
+      lead: 'Here is our promise to you:',
       lines: [
         'Nothing you write here can be traced back to you.',
         'We do not ask who you are.',

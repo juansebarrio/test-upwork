@@ -81,20 +81,22 @@ dpkg -l | grep fail2ban                                       # empty
 On a phone and on a laptop:
 
 1. Open some unrelated site first (say, a news site). Then open the Home page.
-2. Walk through the site with its own links: About, Our Work, Tea Talks, Stories, Contact. Send a message. Go back to Home with "Back to the collective".
+2. Walk through the site with its own links: About, Our Work, Tea Talks, Stories, Contact. Press **Back** twice and **Forward** once: you move between the pages of the site, and the page does not reload (the Back and Forward buttons work as on any site).
 3. Press **Leave quickly**. You land on the exit site. Press **Back**. You must land on the news site, **not** on any page of this site.
 4. Repeat the walk and this time press **Escape twice within a second**. Same result.
    Also press Escape **once** and wait two seconds: nothing should happen and anything you typed must still be there.
-5. Repeat the walk, end on Tea Talks, send a story, and from the thank-you page press **Leave quickly**. Press **Back**: news site again.
+5. Repeat the walk, send a story from Tea Talks on the way (the thank-you screen takes the place of the writing page, it does not add a step), then press **Leave quickly**. Press **Back**: news site again. The same with a contact message.
 6. Hold Ctrl (or Cmd) and click a link: it opens in a new tab, as in any site; the current page stays.
 7. With JavaScript disabled, the pill is a plain link to the exit site and the forms post normally.
 
-Why this works: on every page every internal move (links, forms, quick exit) uses `location.replace`, which swaps the current history entry instead of adding a new one, so a whole visit, however long, occupies one slot and the exit overwrites it. Before leaving, the script also pauses any audio or video on the page. `scripts/quick-exit-check.mjs` runs this walk and fails on any extra entry.
+Why this works: moving between pages is done by a small router inside the page (Astro's client router, same origin, no animation), so the browser keeps one history entry per page and the document itself stays. The router counts the pages opened in this tab; on exit the script rewinds that many entries in one step and, the moment the browser lands on the first one, replaces it with the exit site. Every page of the visit is gone from Back. Before leaving, the script also pauses any audio or video on the page. `scripts/quick-exit-check.mjs` runs this walk, Back and Forward included, and fails on any extra entry.
 
-Two limits, in plain words:
+Three limits, in plain words:
 
 - **With JavaScript off**, the button is a plain link and the pages are plain pages. The exit still works, but the Back button can return to the page that was open before it.
-- **A visit that started from a search results page returns there.** The site replaces only its own entries; the page the visitor came from (a search, a message, a bookmark list) is still the one Back goes to.
+- **A visit that started from a search results page returns there.** The site rewinds only its own entries; the page the visitor came from (a search, a message, a bookmark list) is still the one Back goes to.
+- **A reload in the middle of a visit cuts the rewind.** The pages opened before the reload belong to the old document and cannot be rewound from the new one; the exit rewinds the pages opened since the reload and Back can then reach the earlier ones. Browsers without view-transition support (older versions) get ordinary page loads, and there the exit replaces the current page only.
+- **Forward can still reach the visit, in Chromium.** Replacing the first page's entry with the exit site does not discard the entries after it: Back from the exit site lands before the site, but pressing Forward twice from there (past the exit site) reaches the pages of the visit again, until anything else is opened on the exit site. Only a new page load from the first entry would discard them, and that would leave the first page itself in Back. The check script prints this as a limit on every run.
 
 Note: browsers still keep their own **history list** (the one under the menu) unless private mode is used. The quick exit protects the Back button, not that list. The Safety and Privacy page says so.
 
