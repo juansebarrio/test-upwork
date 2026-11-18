@@ -1,6 +1,7 @@
 import type { APIRoute } from 'astro';
 import { config } from '../../lib/config';
-import { passwordMatches, startSession } from '../../lib/auth';
+import { passphraseMatches, startSession } from '../../lib/auth';
+import { getStore } from '../../lib/store';
 
 export const prerender = false;
 
@@ -13,7 +14,8 @@ export const POST: APIRoute = async ({ request, cookies, redirect }) => {
 
   const form = await request.formData();
   const password = form.get('password');
-  const matched = typeof password === 'string' && passwordMatches(password);
+  const store = await getStore();
+  const matched = typeof password === 'string' && passphraseMatches(store, password);
   if (matched) startSession(cookies);
 
   await minimumWait;

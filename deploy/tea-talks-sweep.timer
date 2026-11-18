@@ -1,0 +1,13 @@
+# Runs the sweep once a day. Install with:
+#   sudo cp deploy/tea-talks-sweep.service deploy/tea-talks-sweep.timer /etc/systemd/system/
+#   sudo systemctl daemon-reload && sudo systemctl enable --now tea-talks-sweep.timer
+[Unit]
+Description=Daily run of the Tea Talks contact sweep
+
+[Timer]
+OnCalendar=daily
+RandomizedDelaySec=1h
+Persistent=true
+
+[Install]
+WantedBy=timers.target

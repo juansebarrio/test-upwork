@@ -1,0 +1,49 @@
+---
+/** Change the passphrase from inside the panel: current one, new one twice. */
+import Base from '../../layouts/Base.astro';
+import { copy } from '../../content/copy';
+import { config } from '../../lib/config';
+import { isSignedIn, passphraseMatches, setPassphrase } from '../../lib/auth';
+import { getStore } from '../../lib/store';
+
+const a = copy.admin.change;
+const store = await getStore();
+if (!isSignedIn(Astro.cookies)) return Astro.redirect('/admin', 303);
+let error: string | null = null;
+
+if (Astro.request.method === 'POST') {
+  // Same fixed delay as a login: checking the current passphrase is a login attempt.
+  const minimumWait = new Promise<void>((resolve) => setTimeout(resolve, config.loginDelayMs));
+  const form = await Astro.request.formData();
+  const current = String(form.get('current') ?? '');
+  const p1 = String(form.get('passphrase') ?? '');
+  const p2 = String(form.get('repeat') ?? '');
+  const ok = !config.demoMode && passphraseMatches(store, current);
+  await minimumWait;
+  if (config.demoMode) error = a.notInPreview;
+  else if (!ok) error = a.wrongCurrent;
+  else if (p1.length < config.minPassphrase) error = copy.admin.setup.tooShort;
+  else if (p1 !== p2) error = copy.admin.setup.mismatch;
+  else {
+    setPassphrase(store, p1);
+    return Astro.redirect('/admin?note=changed', 303);
+  }
+}
+---
+<Base title={copy.admin.title} noindex>
+  <section class="login">
+    <h1>{a.heading}</h1>
+    <form method="post" action="/admin/passphrase" autocomplete="off">
+      <label for="current">{a.currentLabel}</label>
+      <input type="password" id="current" name="current" required autocomplete="current-password" />
+      <label for="passphrase">{a.newLabel}</label>
+      <input type="password" id="passphrase" name="passphrase" required minlength={config.minPassphrase} autocomplete="new-password" />
+      <label for="repeat">{a.repeatLabel}</label>
+      <input type="password" id="repeat" name="repeat" required minlength={config.minPassphrase} autocomplete="new-password" />
+      <button type="submit" class="btn-primary">{a.button}</button>
+      {config.demoMode && !error && <p class="field-note">{a.notInPreview}</p>}
+      {error && <p class="field-note field-note-alert" role="alert">{error}</p>}
+    </form>
+    <p class="return"><a class="link" href="/admin">{a.back}</a></p>
+  </section>
+</Base>

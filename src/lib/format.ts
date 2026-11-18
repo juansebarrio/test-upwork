@@ -2,7 +2,7 @@
  * Date display helpers. The database holds a day (YYYY-MM-DD) and nothing finer.
  * Public pages show even less: month and year only.
  */
-import { copy } from '../copy';
+import { copy } from '../content/copy';
 
 /** "September 2026" from "2026-09-29". */
 export function monthYear(day: string): string {

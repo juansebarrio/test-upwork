@@ -1,11 +1,11 @@
 ---
 import Base from '../layouts/Base.astro';
-import { copy } from '../copy';
+import { copy } from '../content/copy';
 ---
-<Base>
-  <section class="centered centered-narrow">
+<Base title={copy.notFound.heading} noindex>
+  <section class="centered">
     <h1>{copy.notFound.heading}</h1>
-    <p class="lead">{copy.notFound.body}</p>
-    <p class="return"><a class="link" href="/" data-replace>{copy.notFound.backHome}</a></p>
+    <p class="body">{copy.notFound.body}</p>
+    <p class="return"><a class="link" href="/">{copy.notFound.back}</a></p>
   </section>
 </Base>

@@ -1,0 +1,22 @@
+# Erases contact reply addresses older than 30 days. Started by tea-talks-sweep.timer.
+[Unit]
+Description=Tea Talks: erase old contact reply addresses
+After=network.target
+
+[Service]
+Type=oneshot
+User=teatalks
+Group=teatalks
+WorkingDirectory=/opt/tea-talks
+EnvironmentFile=/etc/tea-talks/env
+ExecStart=/usr/bin/node /opt/tea-talks/scripts/sweep.mjs
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=tea-talks-sweep
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/tea-talks
+CapabilityBoundingSet=

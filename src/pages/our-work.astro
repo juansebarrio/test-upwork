@@ -1,0 +1,29 @@
+---
+import Base from '../layouts/Base.astro';
+import { copy } from '../content/copy';
+import { ourWork } from '../content/pages';
+---
+<Base title={copy.titles.ourWork} current="/our-work">
+  <h1 class="sr-only">{copy.titles.ourWork}</h1>
+  <section class="opening">
+    <p class="opener">{ourWork.opener}</p>
+  </section>
+  <section class="section">
+    <h2>{ourWork.storiesHeading}</h2>
+    <div class="stack">{ourWork.stories.map((p) => <p class="body">{p}</p>)}</div>
+  </section>
+  <section class="section shape s-ring-after" aria-label="Collections">
+    <ul class="cards-doors">
+      {ourWork.doors.map((d) => (
+        <li>
+          <h3>{d.title}</h3>
+          <p>{d.line}</p>
+        </li>
+      ))}
+    </ul>
+  </section>
+  <section class="section">
+    <p class="body">{ourWork.closing}</p>
+    <p class="return"><a class="link" href="/contact">{ourWork.reach}</a></p>
+  </section>
+</Base>
